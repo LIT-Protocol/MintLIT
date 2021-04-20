@@ -24,7 +24,8 @@ import {
   importSymmetricKey,
   generateSymmetricKey,
   encryptWithSymmetricKey,
-  decryptWithSymmetricKey
+  decryptWithSymmetricKey,
+  compareArrayBuffers
 } from './utils/crypto'
 
 const useStyles = makeStyles(theme => ({
@@ -102,14 +103,14 @@ function App () {
     // }, function (err) {
     // })
 
-    const blob = await zip.generateAsync({ type: 'blob' })
-    const blobArrayBuffer = await blob.arrayBuffer()
-    console.log('blob', blob)
+    const zipBlob = await zip.generateAsync({ type: 'blob' })
+    const zipBlobArrayBuffer = await zipBlob.arrayBuffer()
+    console.log('blob', zipBlob)
 
     const symmKey = await generateSymmetricKey()
     const encryptedZipBlob = await encryptWithSymmetricKey(
       symmKey,
-      blobArrayBuffer
+      zipBlobArrayBuffer
     )
     const exportedSymmKey = await crypto.subtle.exportKey('jwk', symmKey)
     console.log('exportedSymmKey', exportedSymmKey)
@@ -130,6 +131,7 @@ function App () {
     const encryptedSymmKeyData = encryptWithPubkey(pubkey, JSON.stringify(exportedSymmKey), 'x25519-xsalsa20-poly1305')
     // test packing / unpacking
     const packed = JSON.stringify(encryptedSymmKeyData)
+
     const unpacked = JSON.parse(packed)
     // test decrypt
     const decryptedSymmKey = decryptWithPrivkey(unpacked, privkey)
@@ -138,49 +140,26 @@ function App () {
     // import the decrypted symm key
     const importedSymmKey = await importSymmetricKey(decryptedSymmKey)
 
-    const decryptedZip = await decryptWithSymmetricKey(
+    const decryptedZipArrayBuffer = await decryptWithSymmetricKey(
       encryptedZipBlob,
       importedSymmKey
     )
 
-    const decryptedBlob = new Blob(
-      [decryptedZip],
-      { type: 'application/zip' }
+    // compare zip before and after as a sanity check
+    const isEqual = compareArrayBuffers(
+      zipBlobArrayBuffer,
+      decryptedZipArrayBuffer
     )
-    console.log('decrypted blob', decryptedBlob)
+    console.log('Zip before and after decryption are equal: ', isEqual)
 
-    saveAs(decryptedBlob, 'azip.zip')
-    console.log('saved')
+    // const decryptedBlob = new Blob(
+    //   [decryptedZip],
+    //   { type: 'application/zip' }
+    // )
+    // console.log('decrypted blob', decryptedBlob)
 
-    // window.location = 'data:application/zip;base64,' + Buffer.from(decryptedZip).toString('base64')
-
-    //
-
-    //
-    // handleFormUpdate('media_type', file.type)
-    // setFilePreviewUrl(URL.createObjectURL(file))
-    // setUploadedFilename(file.name)
-    // setUploading(true)
-    // setUploadComplete(false)
-    // setUploadProgress(0)
-    // uploadMediaToS3({
-    //   e,
-    //   s3PresignedUrl,
-    //   onComplete: () => {
-    //     console.log('Media uploaded')
-    //     setUploading(false)
-    //     setUploadComplete(true)
-    //   },
-    //   onProgress: (progressEvent) => {
-    //     const progress = Math.round(progressEvent.loaded / progressEvent.total * 100)
-    //     setUploadProgress(progress)
-    //   },
-    //   onError: (err) => {
-    //     setError(err.data)
-    //     setUploading(false)
-    //   },
-    //   dispatch
-    // })
+    // saveAs(decryptedBlob, 'azip.zip')
+    // console.log('saved')
   }
 
   return (

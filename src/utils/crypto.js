@@ -7,6 +7,16 @@ const SYMM_KEY_ALGO_PARAMS = {
   length: 256
 }
 
+export function compareArrayBuffers (buf1, buf2) {
+  if (buf1.byteLength !== buf2.byteLength) return false
+  const dv1 = new Uint8Array(buf1)
+  const dv2 = new Uint8Array(buf2)
+  for (let i = 0; i !== buf1.byteLength; i++) {
+    if (dv1[i] !== dv2[i]) return false
+  }
+  return true
+}
+
 export async function importSymmetricKey (jwkSymmKey) {
   const importedSymmKey = await crypto.subtle.importKey(
     'jwk',
