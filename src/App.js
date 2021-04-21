@@ -14,8 +14,8 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import DeleteIcon from '@material-ui/icons/Delete'
 
 import { connectWalletAndDeriveKeys } from './utils/eth'
-import { createHtmlWrapper } from './utils/lit'
-import LIT from './components/LIT'
+import { createHtmlWrapper, zipAndEncryptString } from './utils/lit'
+import Presentation from './components/Presentation'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -65,7 +65,28 @@ function App () {
   }
 
   const handleSubmit = () => {
+    // package up all the stuffs
+    const htmlString = createHtmlWrapper({
+      title,
+      description,
+      quantity,
+      socialMediaUrl,
+      files: includedFiles
+    })
+    const locked = zipAndEncryptString(htmlString)
+  }
 
+  const fileToDataUrl = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+      // log to console
+      // logs data:<type>;base64,wL2dvYWwgbW9yZ...
+      // console.log(reader.result);
+        resolve(reader.result)
+      }
+      reader.readAsDataURL(file)
+    })
   }
 
   const handleMediaChosen = async (e) => {
@@ -76,7 +97,16 @@ function App () {
       return
     }
     const files = e.target.files
-    const newIncludedFiles = [...includedFiles, ...files]
+    const convertedFiles = []
+    for (let i = 0; i < files.length; i++) {
+      const dataUrl = await fileToDataUrl(files[i])
+      convertedFiles.push({
+        type: files[i].type,
+        name: files[i].name,
+        dataUrl
+      })
+    }
+    const newIncludedFiles = [...includedFiles, ...convertedFiles]
 
     setIncludedFiles(newIncludedFiles)
   }
@@ -252,7 +282,7 @@ function App () {
                 <div style={{ height: 8 }} />
                 <Card>
                   <CardContent>
-                    <LIT
+                    <Presentation
                       title={title}
                       description={description}
                       quantity={quantity}

@@ -1,8 +1,8 @@
 import React from 'react'
-import LITInfo from './LITInfo'
+import Info from './LITInfo'
 import MediaGrid from './MediaGrid'
 
-export default function LIT (props) {
+export default function Presentation (props) {
   const {
     title,
     description,
@@ -13,7 +13,7 @@ export default function LIT (props) {
 
   return (
     <>
-      <LITInfo
+      <Info
         title={title}
         description={description}
         quantity={quantity}

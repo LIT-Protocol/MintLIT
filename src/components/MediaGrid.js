@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
@@ -31,7 +31,8 @@ export default function MediaGrid (props) {
     if (!file.type) {
       return null
     }
-    const fileUrl = URL.createObjectURL(file)
+    // const fileUrl = URL.createObjectURL(file)
+    const fileUrl = file.dataUrl
     if (file.type.includes('image')) {
       return (
         <img className={classes.imageAndVideo} src={fileUrl} style={{ maxHeight: maxHeight || '100%' }} />

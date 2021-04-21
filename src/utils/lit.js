@@ -2,9 +2,11 @@ import React from 'react'
 
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
-import ReactDOMServer from 'react-dom/server'
 
-import MediaGrid from '../components/MediaGrid'
+import ReactDOMServer from 'react-dom/server'
+import { ServerStyleSheets } from '@material-ui/core/styles'
+
+import Presentation from '../components/Presentation'
 
 import {
   encryptWithPubkey,
@@ -18,20 +20,22 @@ import {
 
 import { connectWalletAndDeriveKeys } from './eth'
 
-export async function zipAndEncrypt (files) {
+export async function zipAndEncryptString (string) {
+  const zip = new JSZip()
+  zip.file('index.html', string)
+  return encryptZip(zip)
+}
+
+export async function zipAndEncryptFiles (files) {
   // let's zip em
   const zip = new JSZip()
   for (let i = 0; i < files.length; i++) {
     zip.folder('encryptedAssets').file(files[i].name, files[i])
   }
+  return encryptZip(zip)
+}
 
-  // to save the zip for testing:
-  // zip.generateAsync({ type: 'base64' }).then(function (base64) { // 1) generate the zip file
-  // /* global saveAs */
-  //   window.location = 'data:application/zip;base64,' + base64
-  // }, function (err) {
-  // })
-
+export async function encryptZip (zip) {
   const zipBlob = await zip.generateAsync({ type: 'blob' })
   const zipBlobArrayBuffer = await zipBlob.arrayBuffer()
   console.log('blob', zipBlob)
@@ -85,13 +89,13 @@ export async function zipAndEncrypt (files) {
   }
 
   // to download the zip, for testing, uncomment this
-  // const decryptedBlob = new Blob(
-  //   [decryptedZip],
-  //   { type: 'application/zip' }
-  // )
-  // console.log('decrypted blob', decryptedBlob)
+  const decryptedBlob = new Blob(
+    [decryptedZipArrayBuffer],
+    { type: 'application/zip' }
+  )
+  console.log('decrypted blob', decryptedBlob)
 
-  // saveAs(decryptedBlob, 'decrypted.zip')
+  saveAs(decryptedBlob, 'decrypted.zip')
   // console.log('saved')
 
   return {
@@ -100,13 +104,25 @@ export async function zipAndEncrypt (files) {
   }
 }
 
-export function createHtmlWrapper ({ files, title }) {
-  let html = `<html><head><title>${title}</title></head><body>`
+export function createHtmlWrapper (props) {
+  const { title } = props
+  const sheets = new ServerStyleSheets()
 
-  html += ReactDOMServer.renderToStaticMarkup(
-    <MediaGrid files={files} />
-  )
+  const html = ReactDOMServer.renderToString(sheets.collect(
+    <Presentation {...props} />
+  ))
+  const css = sheets.toString()
 
-  html += '</body></html>'
-  return html
+  return `
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>${title}</title>
+    <style id="jss-server-side">${css}</style>
+  </head>
+  <body>
+    <div id="root">${html}</div>
+  </body>
+</html>
+  `
 }
