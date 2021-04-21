@@ -8,6 +8,7 @@ import Authereum from 'authereum'
 import naclUtil from 'tweetnacl-util'
 import nacl from 'tweetnacl'
 import { toBuffer, bufferToHex } from 'ethereumjs-util'
+import { getPublicKey, savePublicKey } from './cloudFunctions'
 
 export async function signMessage ({ body }) {
   const providerOptions = {
@@ -46,20 +47,20 @@ export async function signMessage ({ body }) {
   const account = accounts[0]
   console.log('signing with ', account)
   const signature = await web3.eth.personal.sign(body, account)
-  const signingAddress = web3.eth.accounts.recover(body, signature)
+  const address = web3.eth.accounts.recover(body, signature)
 
   console.log('Signature: ', signature)
-  console.log('recovered signingAddress: ', signingAddress)
+  console.log('recovered address: ', address)
 
-  return signature
+  return { signature, address }
 }
 
 export async function connectWalletAndDeriveKeys () {
-  const signedMessage = await signMessage({ body: 'I am creating an account to mint a LIT' })
-  console.log('Signed message: ' + signedMessage)
+  const { signature, address } = await signMessage({ body: 'I am creating an account to mint a LIT' })
+  console.log('Signed message: ' + signature)
 
   // derive keypair
-  const data = toBuffer(signedMessage)
+  const data = toBuffer(signature)
   const hash = await crypto.subtle.digest('SHA-256', data)
   const uint8Hash = new Uint8Array(hash)
   const { publicKey, secretKey } = nacl.box.keyPair.fromSecretKey(uint8Hash)
@@ -70,4 +71,17 @@ export async function connectWalletAndDeriveKeys () {
   console.log('public key: ' + keypair.publicKey)
   const asString = JSON.stringify(keypair)
   localStorage.setItem('keypair', asString)
+
+  // is it already saved on the server?
+  const { pubkey, errorCode } = await getPublicKey({ address })
+  if (errorCode === 'not_found' || pubkey !== keypair.publicKey) {
+    // add it
+    const msg = 'I am saving my public key so that others can send me LITs'
+    const res = await signMessage({ body: msg })
+    await savePublicKey({
+      sig: res.signature,
+      msg,
+      pubkey: keypair.publicKey
+    })
+  }
 }
