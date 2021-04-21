@@ -5,6 +5,10 @@ import Fortmatic from 'fortmatic'
 import Torus from '@toruslabs/torus-embed'
 import Authereum from 'authereum'
 
+import naclUtil from 'tweetnacl-util'
+import nacl from 'tweetnacl'
+import { toBuffer, bufferToHex } from 'ethereumjs-util'
+
 export async function signMessage ({ body }) {
   const providerOptions = {
     walletconnect: {
@@ -48,4 +52,22 @@ export async function signMessage ({ body }) {
   console.log('recovered signingAddress: ', signingAddress)
 
   return signature
+}
+
+export async function connectWalletAndDeriveKeys () {
+  const signedMessage = await signMessage({ body: 'I am creating an account to mint a LIT' })
+  console.log('Signed message: ' + signedMessage)
+
+  // derive keypair
+  const data = toBuffer(signedMessage)
+  const hash = await crypto.subtle.digest('SHA-256', data)
+  const uint8Hash = new Uint8Array(hash)
+  const { publicKey, secretKey } = nacl.box.keyPair.fromSecretKey(uint8Hash)
+  const keypair = {
+    publicKey: naclUtil.encodeBase64(publicKey),
+    secretKey: naclUtil.encodeBase64(secretKey)
+  }
+  console.log(keypair)
+  const asString = JSON.stringify(keypair)
+  localStorage.setItem('keypair', asString)
 }
