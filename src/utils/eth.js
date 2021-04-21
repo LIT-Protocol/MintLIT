@@ -67,7 +67,7 @@ export async function connectWalletAndDeriveKeys () {
     publicKey: naclUtil.encodeBase64(publicKey),
     secretKey: naclUtil.encodeBase64(secretKey)
   }
-  console.log(keypair)
+  console.log('public key: ' + keypair.publicKey)
   const asString = JSON.stringify(keypair)
   localStorage.setItem('keypair', asString)
 }

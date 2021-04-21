@@ -45,6 +45,10 @@ export async function encryptZip (zip) {
     symmKey,
     zipBlobArrayBuffer
   )
+
+  // to download the encrypted zip file for testing, uncomment this
+  saveAs(encryptedZipBlob, 'encrypted.bin')
+
   const exportedSymmKey = await crypto.subtle.exportKey('jwk', symmKey)
   console.log('exportedSymmKey', exportedSymmKey)
 
@@ -64,38 +68,39 @@ export async function encryptZip (zip) {
   const encryptedSymmKeyData = encryptWithPubkey(pubkey, JSON.stringify(exportedSymmKey), 'x25519-xsalsa20-poly1305')
   // test packing / unpacking
   const packed = JSON.stringify(encryptedSymmKeyData)
+  console.log('packed symmetric key ', packed)
 
-  const unpacked = JSON.parse(packed)
-  // test decrypt
-  const decryptedSymmKey = decryptWithPrivkey(unpacked, privkey)
-  console.log('decrypted', decryptedSymmKey)
-
-  // import the decrypted symm key
-  const importedSymmKey = await importSymmetricKey(decryptedSymmKey)
-
-  const decryptedZipArrayBuffer = await decryptWithSymmetricKey(
-    encryptedZipBlob,
-    importedSymmKey
-  )
-
-  // compare zip before and after as a sanity check
-  const isEqual = compareArrayBuffers(
-    zipBlobArrayBuffer,
-    decryptedZipArrayBuffer
-  )
-  console.log('Zip before and after decryption are equal: ', isEqual)
-  if (!isEqual) {
-    throw new Error('Decrypted zip does not match original zip.  Something is wrong.')
-  }
+  //   const unpacked = JSON.parse(packed)
+  //   // test decrypt
+  //   const decryptedSymmKey = decryptWithPrivkey(unpacked, privkey)
+  //   console.log('decrypted', decryptedSymmKey)
+  //
+  //   // import the decrypted symm key
+  //   const importedSymmKey = await importSymmetricKey(decryptedSymmKey)
+  //
+  //   const decryptedZipArrayBuffer = await decryptWithSymmetricKey(
+  //     encryptedZipBlob,
+  //     importedSymmKey
+  //   )
+  //
+  //   // compare zip before and after as a sanity check
+  //   const isEqual = compareArrayBuffers(
+  //     zipBlobArrayBuffer,
+  //     decryptedZipArrayBuffer
+  //   )
+  //   console.log('Zip before and after decryption are equal: ', isEqual)
+  //   if (!isEqual) {
+  //     throw new Error('Decrypted zip does not match original zip.  Something is wrong.')
+  //   }
 
   // to download the zip, for testing, uncomment this
-  const decryptedBlob = new Blob(
-    [decryptedZipArrayBuffer],
-    { type: 'application/zip' }
-  )
-  console.log('decrypted blob', decryptedBlob)
-
-  saveAs(decryptedBlob, 'decrypted.zip')
+  //   const decryptedBlob = new Blob(
+  //     [decryptedZipArrayBuffer],
+  //     { type: 'application/zip' }
+  //   )
+  //   console.log('decrypted blob', decryptedBlob)
+  //
+  //   saveAs(decryptedBlob, 'decrypted.zip')
   // console.log('saved')
 
   return {

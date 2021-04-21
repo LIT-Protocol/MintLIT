@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-function App () {
+export default function Mint () {
   const classes = useStyles()
   const [includedFiles, setIncludedFiles] = useState([])
   const [title, setTitle] = useState('')
@@ -300,5 +300,3 @@ function App () {
     </div>
   )
 }
-
-export default App
