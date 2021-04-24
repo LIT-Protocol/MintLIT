@@ -14,7 +14,11 @@ import IconButton from '@material-ui/core/IconButton'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import DeleteIcon from '@material-ui/icons/Delete'
 
-import { connectWalletAndDeriveKeys } from './utils/eth'
+import {
+  deriveEncryptionKeys,
+  decryptWithWeb3PrivateKey,
+  checkAndDeriveKeypair
+} from './utils/eth'
 import {
   decryptWithSymmetricKey,
   decryptWithPrivkey,
@@ -64,23 +68,24 @@ export default function Decrypt () {
   const [file, setFile] = useState(null)
 
   const handleConnectWallet = async () => {
-    await connectWalletAndDeriveKeys()
+    await deriveEncryptionKeys()
   }
 
   const handleSubmit = async () => {
-    let keypair = localStorage.getItem('keypair')
-    if (!keypair) {
-      await connectWalletAndDeriveKeys()
-      keypair = localStorage.getItem('keypair')
-    }
+    const keypair = await checkAndDeriveKeypair()
+
     console.log('Got keypair out of localstorage: ' + keypair)
-    keypair = JSON.parse(keypair)
     const pubkey = keypair.publicKey
     const privkey = keypair.secretKey
 
     const unpacked = JSON.parse(symmKey)
-    // test decrypt
-    const decryptedSymmKey = decryptWithPrivkey(unpacked, privkey)
+
+    let decryptedSymmKey = await decryptWithWeb3PrivateKey(unpacked)
+    if (!decryptedSymmKey) {
+      // fallback to trying the private derived via signature
+      console.log('probably not metamask')
+      decryptedSymmKey = decryptWithPrivkey(unpacked, privkey)
+    }
     console.log('decrypted', decryptedSymmKey)
 
     // import the decrypted symm key

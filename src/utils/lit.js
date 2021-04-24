@@ -18,7 +18,7 @@ import {
   compareArrayBuffers
 } from './crypto'
 
-import { connectWalletAndDeriveKeys } from './eth'
+import { checkAndDeriveKeypair } from './eth'
 
 export async function zipAndEncryptString (string) {
   const zip = new JSZip()
@@ -47,29 +47,22 @@ export async function encryptZip (zip) {
   )
 
   // to download the encrypted zip file for testing, uncomment this
-  saveAs(encryptedZipBlob, 'encrypted.bin')
+  // saveAs(encryptedZipBlob, 'encrypted.bin')
 
   const exportedSymmKey = await crypto.subtle.exportKey('jwk', symmKey)
   console.log('exportedSymmKey', exportedSymmKey)
 
   // encrypt the symmetric key with the
   // public key derived from the eth wallet
-  let keypair = localStorage.getItem('keypair')
-  if (!keypair) {
-    await connectWalletAndDeriveKeys()
-    keypair = localStorage.getItem('keypair')
-  }
-  console.log('Got keypair out of localstorage: ' + keypair)
-  keypair = JSON.parse(keypair)
+  const keypair = await checkAndDeriveKeypair()
   const pubkey = keypair.publicKey
   const privkey = keypair.secretKey
 
   // encrypt symm key
   const encryptedSymmKeyData = encryptWithPubkey(pubkey, JSON.stringify(exportedSymmKey), 'x25519-xsalsa20-poly1305')
-  // test packing / unpacking
   const packed = JSON.stringify(encryptedSymmKeyData)
-  console.log('packed symmetric key ', packed)
 
+  //   console.log('packed symmetric key ', packed)
   //   const unpacked = JSON.parse(packed)
   //   // test decrypt
   //   const decryptedSymmKey = decryptWithPrivkey(unpacked, privkey)

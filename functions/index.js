@@ -2,10 +2,13 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const { recoverPersonalSignature, normalize } = require('eth-sig-util')
 const { bugsnagWrapper } = require('./bugsnag.js')
+const uuid = require('uuid-v4')
 
 admin.initializeApp()
 
 const db = admin.firestore()
+const bucket = admin.storage().bucket()
+const storage = admin.storage()
 
 exports.savePublicKey = functions.https.onCall(bugsnagWrapper(async (data, context) => {
   const { sig, msg, pubkey } = data
@@ -43,4 +46,69 @@ exports.getPublicKey = functions.https.onCall(bugsnagWrapper(async (data, contex
       pubkey: doc.data().pubkey
     }
   }
+}))
+
+exports.getUploadUrl = functions.https.onCall(bugsnagWrapper(async (data, context) => {
+  const urlOptions = {
+    version: 'v4',
+    action: 'write',
+    expires: Date.now() + 1000 * 60 * 60 * 24, // 24 hours,
+    extensionHeaders: {
+      'x-goog-content-length-range': '0,25000000' // 25mb max
+    }
+  }
+
+  const fileId = uuid()
+  const filePath = `litUploads/${fileId}`
+
+  const file = bucket
+    .file(filePath)
+  const [uploadUrl] = await file
+    .getSignedUrl(urlOptions)
+
+  return { uploadUrl, filePath, fileId }
+}))
+
+exports.createTokenMetadata = functions.https.onCall(bugsnagWrapper(async (data, context) => {
+  const {
+    chain,
+    tokenAddress,
+    tokenId,
+    title,
+    description,
+    socialMediaUrl,
+    quantity,
+    mintingAddress,
+    filePath,
+    encryptedSymmetricKey,
+    fileId,
+    txHash
+  } = data
+  functions.logger.info('saveTokenMetadata')
+  const normalizedTokenAddress = normalize(tokenAddress)
+
+  const fileUrl = bucket.file(filePath).publicUrl()
+
+  // save the metadata
+  const docRef = db.collection('tokens').doc(chain).collection(normalizedTokenAddress).doc(tokenId)
+  docRef.create({
+    chain,
+    tokenAddress: normalizedTokenAddress,
+    tokenId,
+    title,
+    description,
+    socialMediaUrl,
+    quantity,
+    mintingAddress,
+    fileUrl,
+    fileId,
+    txHash
+  })
+
+  docRef.collection('encryptedSymmetricKeys').doc(mintingAddress).create({
+    encryptedSymmetricKey,
+    address: normalize(mintingAddress)
+  })
+
+  return { success: true }
 }))
