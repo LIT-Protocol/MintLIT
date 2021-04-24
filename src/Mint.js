@@ -13,12 +13,16 @@ import Link from '@material-ui/core/Link'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
-import FormHelperText from '@material-ui/core/FormHelperText'
+import Tooltip from '@material-ui/core/Tooltip'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
 
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import DeleteIcon from '@material-ui/icons/Delete'
+import LockOpenIcon from '@material-ui/icons/LockOpen'
+import LockIcon from '@material-ui/icons/Lock'
+import LandscapeIcon from '@material-ui/icons/Landscape'
+import LandscapeOutlinedIcon from '@material-ui/icons/LandscapeOutlined'
 
 import { deriveEncryptionKeys, mintLIT } from './utils/eth'
 import { createHtmlWrapper, zipAndEncryptString } from './utils/lit'
@@ -79,6 +83,7 @@ export default function Mint () {
   const [error, setError] = useState('')
   const [minting, setMinting] = useState(false)
   const [mintingComplete, setMintingComplete] = useState(false)
+  const [backgroundImage, setBackgroundImage] = useState(null)
 
   useEffect(() => {
     // get presigned upload url
@@ -130,6 +135,8 @@ export default function Mint () {
             </Typography>
           </>
         )
+      } else if (errorCode === 'user_rejected_request') {
+        setError('You rejected the request in your wallet')
       } else {
         setError('An unknown error occurred')
       }
@@ -184,6 +191,8 @@ export default function Mint () {
       convertedFiles.push({
         type: files[i].type,
         name: files[i].name,
+        encrypted: true,
+        backgroundImage: false,
         dataUrl
       })
     }
@@ -196,6 +205,46 @@ export default function Mint () {
     setIncludedFiles(prevFiles => {
       const tempFiles = [...prevFiles]
       tempFiles.splice(i, 1)
+      return tempFiles
+    })
+  }
+
+  const handleSetAsBackgroundImage = (i) => {
+    const file = includedFiles[i]
+    setBackgroundImage(file)
+    setIncludedFiles(prevFiles => {
+      let tempFiles = [...prevFiles]
+      // remove all others as background image, first
+      tempFiles = tempFiles.map(f => {
+        f.backgroundImage = false
+        return f
+      })
+      tempFiles[i].backgroundImage = true
+      return tempFiles
+    })
+  }
+
+  const handleRemoveAsBackgroundImage = (i) => {
+    setBackgroundImage(null)
+    setIncludedFiles(prevFiles => {
+      const tempFiles = [...prevFiles]
+      tempFiles[i].backgroundImage = false
+      return tempFiles
+    })
+  }
+
+  const handleMakePublic = (i) => {
+    setIncludedFiles(prevFiles => {
+      const tempFiles = [...prevFiles]
+      tempFiles[i].encrypted = false
+      return tempFiles
+    })
+  }
+
+  const handleMakePrivate = (i) => {
+    setIncludedFiles(prevFiles => {
+      const tempFiles = [...prevFiles]
+      tempFiles[i].encrypted = true
       return tempFiles
     })
   }
@@ -247,7 +296,7 @@ export default function Mint () {
                         Upload your files here
                       </Typography>
                       <Typography variant='body1'>
-                        Images, videos, and audio files accepted
+                        Images, videos, and audio files accepted.  25mb max total.
                       </Typography>
                     </Grid>
 
@@ -295,12 +344,57 @@ export default function Mint () {
                             </Typography>
                           </Grid>
                           <Grid item>
-                            <IconButton
-                              size='small'
-                              onClick={() => handleRemoveFile(i)}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
+                            <Tooltip title='Remove file from LIT'>
+                              <IconButton
+                                size='small'
+                                onClick={() => handleRemoveFile(i)}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </Tooltip>
+                            {file.backgroundImage
+                              ? (
+                                <Tooltip title='Remove as background image'>
+                                  <IconButton
+                                    size='small'
+                                    onClick={() => handleRemoveAsBackgroundImage(i)}
+                                  >
+                                    <LandscapeOutlinedIcon />
+                                  </IconButton>
+                                </Tooltip>
+                                )
+                              : (
+                                <Tooltip title='Make background image'>
+                                  <IconButton
+                                    size='small'
+                                    onClick={() => handleSetAsBackgroundImage(i)}
+                                  >
+                                    <LandscapeIcon />
+                                  </IconButton>
+                                </Tooltip>
+                                )}
+
+                            {file.encrypted
+                              ? (
+                                <Tooltip title='This file is encrypted and only LIT holders will be able to view it.  Click to make public'>
+                                  <IconButton
+                                    size='small'
+                                    onClick={() => handleMakePublic(i)}
+                                  >
+                                    <LockOpenIcon />
+                                  </IconButton>
+                                </Tooltip>
+                                )
+                              : (
+                                <Tooltip title='This file is public.  Click to make it encrypted so only LIT holders will be able to view it'>
+                                  <IconButton
+                                    size='small'
+                                    onClick={() => handleMakePrivate(i)}
+                                  >
+                                    <LockIcon />
+                                  </IconButton>
+                                </Tooltip>
+                                )}
                           </Grid>
                         </Grid>
                       )}
@@ -404,6 +498,7 @@ export default function Mint () {
                       quantity={quantity}
                       socialMediaUrl={socialMediaUrl}
                       files={includedFiles}
+                      backgroundImage={backgroundImage}
                     />
                   </CardContent>
                 </Card>

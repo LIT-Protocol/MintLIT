@@ -220,52 +220,25 @@ export async function mintLIT ({ chain, quantity }) {
   const tokenAddress = CHAINS[chain].contractAddress
   const contract = new web3.eth.Contract(LIT.abi, tokenAddress)
   console.log('sending to chain...')
-  const txReceipt = await contract.methods.mint(quantity).send({ from: account })
-  console.log('txReceipt: ', txReceipt)
-  const tokenId = txReceipt.events.TransferSingle.returnValues.id
-  return {
-    txHash: txReceipt.transactionHash,
-    tokenId,
-    tokenAddress,
-    mintingAddress: account
+  try {
+    const txReceipt = await contract.methods.mint(quantity).send({ from: account })
+    console.log('txReceipt: ', txReceipt)
+    const tokenId = txReceipt.events.TransferSingle.returnValues.id
+    return {
+      txHash: txReceipt.transactionHash,
+      tokenId,
+      tokenAddress,
+      mintingAddress: account
+    }
+  } catch (error) {
+    console.log(error)
+    if (error.code === 4001) {
+      // EIP-1193 userRejectedRequest error
+      console.log('User rejected request')
+      return { errorCode: 'user_rejected_request' }
+    } else {
+      console.error(error)
+    }
+    return { errorCode: 'unknown_error' }
   }
-  // const tx = await waitUntilTxConfirmed({ web3, txHash })
-  // console.log('tx confirmed: ', tx)
-  // return { errorCode: 'testing' }
-//   return new Promise((resolve, reject) => {
-//     // event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
-//
-//     const tx = await waitUntilTxConfirmed(txHash)
-//     console.log('tx confirmed: ', tx)
-//     resolve({ errorCode: 'testing' })
-//     // resolve({
-//     //     tokenId,
-//     //     tokenAddress,
-//     //     mintingAddress: account
-//     //   })
-//
-//     //     contract.once('TransferSingle', {
-//     //       filter: {
-//     //         _operator: account,
-//     //         _from: '0x0000000000000000000000000000000000000000',
-//     //         _to: account
-//     //       },
-//     //       fromBlock: 'latest'
-//     //     }, function (error, event) {
-//     //       if (error) {
-//     //         console.log(error)
-//     //         reject(error)
-//     //       }
-//     //       console.log(event)
-//     //       const tokenId = event.returnValues.id
-//     //       console.log('tokenId', tokenId)
-//     //       console.log('tokenAddress', tokenAddress)
-//     //
-//     //       resolve({
-//     //         tokenId,
-//     //         tokenAddress,
-//     //         mintingAddress: account
-//     //       })
-//     //     })
-//   })
 }

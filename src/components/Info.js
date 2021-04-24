@@ -4,24 +4,33 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 import Grid from '@material-ui/core/Grid'
+import Button from '@material-ui/core/Button'
+
+import LockOpenIcon from '@material-ui/icons/LockOpen'
+import LockIcon from '@material-ui/icons/Lock'
 
 const useStyles = makeStyles(theme => ({
   root: {
-
+    backgroundColor: 'white'
   },
   leftAlignedText: {
     textAlign: 'left'
   },
   rightAlignedText: {
     textAlign: 'right'
+  },
+  gridContainer: {
+    flexWrap: 'nowrap'
   }
 }))
-export default function LITInfo (props) {
+export default function Info (props) {
   const {
     title,
     description,
     quantity,
-    socialMediaUrl
+    socialMediaUrl,
+    locked,
+    handleToggleLock
   } = props
   const classes = useStyles()
 
@@ -32,6 +41,7 @@ export default function LITInfo (props) {
       <Grid
         container
         justify='space-between'
+        className={classes.gridContainer}
       >
         <Grid item className={classes.leftAlignedText}>
           <Typography variant='h3'>
@@ -45,7 +55,7 @@ export default function LITInfo (props) {
           <Typography variant='subtitle1'>
             {quantity} edition{quantity > 1 ? 's' : ''}
           </Typography>
-          <br />
+          <div style={{ height: 1 }} />
           {socialMediaUrl
             ? (
               <Link
@@ -57,8 +67,40 @@ export default function LITInfo (props) {
               </Link>
               )
             : null}
+          <div style={{ height: 8 }} />
+          {locked
+            ? (
+              <Button
+                onClick={handleToggleLock}
+                variant='contained'
+                startIcon={<LockOpenIcon />}
+              >
+                Unlock
+              </Button>
+              )
+            : (
+              <Button
+                onClick={handleToggleLock}
+                variant='contained'
+                startIcon={<LockIcon />}
+              >
+                Lock
+              </Button>
+              )}
         </Grid>
       </Grid>
+      {locked
+        ? (
+          <Typography variant='h6'>
+            LOCKED
+          </Typography>
+          )
+        : (
+          <Typography variant='h6'>
+            UNLOCKED
+          </Typography>
+          )}
+      <div style={{ height: 16 }} />
 
     </div>
   )

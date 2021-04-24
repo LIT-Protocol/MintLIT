@@ -69,6 +69,7 @@ export default function MediaGrid (props) {
     <Grid
       container
       spacing={1}
+      justify='center'
     >
       {jsx}
     </Grid>
