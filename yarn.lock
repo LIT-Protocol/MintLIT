@@ -9594,10 +9594,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
 
-lit-js-sdk@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/lit-js-sdk/-/lit-js-sdk-1.0.2.tgz#2a62a903ed5a24b1e16c939ecf6f5d082e47fcf7"
-  integrity sha512-tIz3ZPvwypMGLN8iwGQE6XmEVIOOaf5Wy+pPXmchjDEfp6Hq3jGjXU/7Q8AJmHFLoCWa3jyjC8AB4GCmjMXgxw==
+lit-js-sdk@^1.0.10:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/lit-js-sdk/-/lit-js-sdk-1.0.10.tgz#bd990604558cab594842f8bc31c81539452c494a"
+  integrity sha512-6rhkVhkKS4oidCKjx1me8zo96WXw77J3A4TSfXBP6yFruwZ7KiBrmVXH30Tf8eU1VbMKZAx6BcHmqoOcnyuJcw==
   dependencies:
     "@metamask/detect-provider" "^1.2.0"
     firebase "^8.4.2"

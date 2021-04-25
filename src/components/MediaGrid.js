@@ -4,6 +4,10 @@ import { makeStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: theme.spacing(3),
+    display: 'inline-block'
+  },
   imageAndVideo: {
     objectFit: 'contain',
     maxWidth: '100%',
@@ -66,12 +70,14 @@ export default function MediaGrid (props) {
   }
 
   return (
-    <Grid
-      container
-      spacing={1}
-      justify='center'
-    >
-      {jsx}
-    </Grid>
+    <div className={classes.root}>
+      <Grid
+        container
+        spacing={1}
+        justify='center'
+      >
+        {jsx}
+      </Grid>
+    </div>
   )
 }

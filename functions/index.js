@@ -88,7 +88,9 @@ exports.createTokenMetadata = functions.https.onCall(bugsnagWrapper(async (data,
   functions.logger.info('saveTokenMetadata')
   const normalizedTokenAddress = normalize(tokenAddress)
 
-  const fileUrl = bucket.file(filePath).publicUrl()
+  const file = bucket.file(filePath)
+  await file.makePublic()
+  const fileUrl = file.publicUrl()
 
   // save the metadata
   const docRef = db.collection('tokens').doc(chain).collection(normalizedTokenAddress).doc(tokenId)

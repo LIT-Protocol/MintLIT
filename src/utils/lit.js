@@ -2,24 +2,51 @@ import React from 'react'
 
 import ReactDOMServer from 'react-dom/server'
 import { ServerStyleSheets } from '@material-ui/core/styles'
+import LitJsSdk from 'lit-js-sdk'
 
 import Presentation from '../components/Presentation'
+import MediaGrid from '../components/MediaGrid'
 
-import { createHtmlLIT } from 'lit-js-sdk'
-
-export function createHtmlWrapper (props) {
-  const { title, encryptedSymmetricKey } = props
+export function createHtmlWrapper ({
+  title,
+  encryptedSymmetricKey,
+  description,
+  quantity,
+  socialMediaUrl,
+  backgroundImage,
+  publicFiles,
+  lockedFiles
+}) {
   const sheets = new ServerStyleSheets()
 
-  const html = ReactDOMServer.renderToString(sheets.collect(
-    <Presentation {...props} />
+  const htmlBody = ReactDOMServer.renderToString(sheets.collect(
+    <Presentation
+      title={title}
+      description={description}
+      quantity={quantity}
+      socialMediaUrl={socialMediaUrl}
+      backgroundImage={backgroundImage}
+      publicFiles={publicFiles}
+    />
   ))
   const css = sheets.toString()
 
-  return createHtmlLIT({
+  return LitJsSdk.createHtmlLIT({
     title,
+    htmlBody,
+    css,
     encryptedSymmetricKey,
-    html,
-    css
+    encryptedZipDataUrl: lockedFiles
   })
+}
+
+export function createMediaGridHtmlString ({
+  files
+}) {
+  const html = ReactDOMServer.renderToString(
+    <MediaGrid
+      files={files}
+    />
+  )
+  return html
 }

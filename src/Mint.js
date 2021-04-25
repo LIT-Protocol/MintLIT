@@ -24,15 +24,11 @@ import LockIcon from '@material-ui/icons/Lock'
 import LandscapeIcon from '@material-ui/icons/Landscape'
 import LandscapeOutlinedIcon from '@material-ui/icons/LandscapeOutlined'
 
-import { mintLIT } from './utils/eth'
-import {
-  checkAndDeriveKeypair,
-  createHtmlWrapper,
-  zipAndEncryptFiles
-} from 'lit-js-sdk'
+import LitJsSdk from 'lit-js-sdk'
 import Presentation from './components/Presentation'
 import { getUploadUrl, createTokenMetadata } from './utils/cloudFunctions'
 import { fileToDataUrl } from './utils/browser'
+import { createHtmlWrapper, createMediaGridHtmlString } from './utils/lit'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -101,7 +97,7 @@ export default function Mint () {
   }, [])
 
   const handleConnectWallet = async () => {
-    await checkAndDeriveKeypair()
+    await LitJsSdk.checkAndDeriveKeypair()
   }
 
   const handleSubmit = async () => {
@@ -109,12 +105,14 @@ export default function Mint () {
     setMintingComplete(false)
     setError('')
 
-    const lockedFiles = includedFiles.filter(f => !f.backgroundImage && f.encrypted).map(f => f.originalFile)
-
-    const { encryptedSymmetricKey, encryptedZip } = await zipAndEncryptFiles(lockedFiles)
+    console.log('encrypting locked files')
+    const lockedFiles = includedFiles.filter(f => !f.backgroundImage && f.encrypted)
+    const lockedFileMediaGridHtml = createMediaGridHtmlString({ files: lockedFiles })
+    const { encryptedSymmetricKey, encryptedZip } = await LitJsSdk.zipAndEncryptString(lockedFileMediaGridHtml)
 
     // package up all the stuffs
-    const htmlString = createHtmlWrapper({
+    console.log('creating html wrapper')
+    const htmlString = await createHtmlWrapper({
       encryptedSymmetricKey,
       title,
       description,
@@ -122,14 +120,14 @@ export default function Mint () {
       socialMediaUrl,
       backgroundImage,
       publicFiles: includedFiles.filter(f => !f.backgroundImage && !f.encrypted),
-      lockedFiles: encryptedZip
+      lockedFiles: await fileToDataUrl(encryptedZip)
     })
 
+    console.log('uploading html')
     const litHtmlBlob = new Blob(
       [htmlString],
       { type: 'text/html' }
     )
-
     // upload file while minting on chain
     const uploadPromise = fetch(uploadUrl, {
       method: 'PUT',
@@ -140,7 +138,8 @@ export default function Mint () {
       body: litHtmlBlob
     })
 
-    const { tokenId, tokenAddress, mintingAddress, txHash, errorCode } = await mintLIT({ chain, quantity })
+    console.log('minting')
+    const { tokenId, tokenAddress, mintingAddress, txHash, errorCode } = await LitJsSdk.mintLIT({ chain, quantity })
     await uploadPromise
 
     if (errorCode) {
@@ -161,6 +160,7 @@ export default function Mint () {
       return
     }
 
+    console.log('creating token metadata on server')
     // save token metadata
     createTokenMetadata({
       chain,
