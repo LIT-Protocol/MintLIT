@@ -24,10 +24,15 @@ import LockIcon from '@material-ui/icons/Lock'
 import LandscapeIcon from '@material-ui/icons/Landscape'
 import LandscapeOutlinedIcon from '@material-ui/icons/LandscapeOutlined'
 
-import { deriveEncryptionKeys, mintLIT } from './utils/eth'
-import { createHtmlWrapper, zipAndEncryptString } from './utils/lit'
+import { mintLIT } from './utils/eth'
+import {
+  checkAndDeriveKeypair,
+  createHtmlWrapper,
+  zipAndEncryptFiles
+} from 'lit-js-sdk'
 import Presentation from './components/Presentation'
 import { getUploadUrl, createTokenMetadata } from './utils/cloudFunctions'
+import { fileToDataUrl } from './utils/browser'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -96,31 +101,43 @@ export default function Mint () {
   }, [])
 
   const handleConnectWallet = async () => {
-    await deriveEncryptionKeys()
+    await checkAndDeriveKeypair()
   }
 
   const handleSubmit = async () => {
     setMinting(true)
     setMintingComplete(false)
     setError('')
+
+    const lockedFiles = includedFiles.filter(f => !f.backgroundImage && f.encrypted).map(f => f.originalFile)
+
+    const { encryptedSymmetricKey, encryptedZip } = await zipAndEncryptFiles(lockedFiles)
+
     // package up all the stuffs
     const htmlString = createHtmlWrapper({
+      encryptedSymmetricKey,
       title,
       description,
       quantity,
       socialMediaUrl,
-      files: includedFiles
+      backgroundImage,
+      publicFiles: includedFiles.filter(f => !f.backgroundImage && !f.encrypted),
+      lockedFiles: encryptedZip
     })
-    const { encryptedSymmetricKey, encryptedZip } = zipAndEncryptString(htmlString)
 
-    // upload file
-    // This will upload the file after having read it
+    const litHtmlBlob = new Blob(
+      [htmlString],
+      { type: 'text/html' }
+    )
+
+    // upload file while minting on chain
     const uploadPromise = fetch(uploadUrl, {
       method: 'PUT',
+      mode: 'cors',
       headers: {
-        'Content-Type': 'application/octet-stream'
+        'Content-Type': 'text/html'
       },
-      body: encryptedZip
+      body: litHtmlBlob
     })
 
     const { tokenId, tokenAddress, mintingAddress, txHash, errorCode } = await mintLIT({ chain, quantity })
@@ -164,19 +181,6 @@ export default function Mint () {
     setMintingComplete(true)
   }
 
-  const fileToDataUrl = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-      // log to console
-      // logs data:<type>;base64,wL2dvYWwgbW9yZ...
-      // console.log(reader.result);
-        resolve(reader.result)
-      }
-      reader.readAsDataURL(file)
-    })
-  }
-
   const handleMediaChosen = async (e) => {
     console.log('handleMediaChosen')
 
@@ -193,7 +197,8 @@ export default function Mint () {
         name: files[i].name,
         encrypted: true,
         backgroundImage: false,
-        dataUrl
+        dataUrl,
+        originalFile: files[i]
       })
     }
     const newIncludedFiles = [...includedFiles, ...convertedFiles]
@@ -202,6 +207,10 @@ export default function Mint () {
   }
 
   const handleRemoveFile = (i) => {
+    const file = includedFiles[i]
+    if (file.backgroundImage) {
+      setBackgroundImage(null)
+    }
     setIncludedFiles(prevFiles => {
       const tempFiles = [...prevFiles]
       tempFiles.splice(i, 1)
@@ -344,35 +353,32 @@ export default function Mint () {
                             </Typography>
                           </Grid>
                           <Grid item>
-                            <Tooltip title='Remove file from LIT'>
-                              <IconButton
-                                size='small'
-                                onClick={() => handleRemoveFile(i)}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
-                            {file.backgroundImage
+
+                            {file.type.includes('image')
                               ? (
-                                <Tooltip title='Remove as background image'>
-                                  <IconButton
-                                    size='small'
-                                    onClick={() => handleRemoveAsBackgroundImage(i)}
-                                  >
-                                    <LandscapeOutlinedIcon />
-                                  </IconButton>
-                                </Tooltip>
+                                  file.backgroundImage
+                                    ? (
+                                      <Tooltip title='Remove as background image'>
+                                        <IconButton
+                                          size='small'
+                                          onClick={() => handleRemoveAsBackgroundImage(i)}
+                                        >
+                                          <LandscapeOutlinedIcon />
+                                        </IconButton>
+                                      </Tooltip>
+                                      )
+                                    : (
+                                      <Tooltip title='Make background image'>
+                                        <IconButton
+                                          size='small'
+                                          onClick={() => handleSetAsBackgroundImage(i)}
+                                        >
+                                          <LandscapeIcon />
+                                        </IconButton>
+                                      </Tooltip>
+                                      )
                                 )
-                              : (
-                                <Tooltip title='Make background image'>
-                                  <IconButton
-                                    size='small'
-                                    onClick={() => handleSetAsBackgroundImage(i)}
-                                  >
-                                    <LandscapeIcon />
-                                  </IconButton>
-                                </Tooltip>
-                                )}
+                              : null}
 
                             {file.encrypted
                               ? (
@@ -395,6 +401,14 @@ export default function Mint () {
                                   </IconButton>
                                 </Tooltip>
                                 )}
+                            <Tooltip title='Remove file from LIT'>
+                              <IconButton
+                                size='small'
+                                onClick={() => handleRemoveFile(i)}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </Tooltip>
                           </Grid>
                         </Grid>
                       )}
@@ -493,11 +507,13 @@ export default function Mint () {
                 <Card>
                   <CardContent>
                     <Presentation
+                      previewMode
                       title={title}
                       description={description}
                       quantity={quantity}
                       socialMediaUrl={socialMediaUrl}
-                      files={includedFiles}
+                      publicFiles={includedFiles.filter(f => !f.backgroundImage && !f.encrypted)}
+                      lockedFilesForPreview={includedFiles.filter(f => !f.backgroundImage && f.encrypted)}
                       backgroundImage={backgroundImage}
                     />
                   </CardContent>

@@ -52,10 +52,11 @@ exports.getUploadUrl = functions.https.onCall(bugsnagWrapper(async (data, contex
   const urlOptions = {
     version: 'v4',
     action: 'write',
-    expires: Date.now() + 1000 * 60 * 60 * 24, // 24 hours,
-    extensionHeaders: {
-      'x-goog-content-length-range': '0,25000000' // 25mb max
-    }
+    expires: Date.now() + 1000 * 60 * 60 * 24 // 24 hours,
+    // extensionHeaders: {
+    //   'x-goog-content-length-range': '0,25000000' // 25mb max
+    // },
+    // virtualHostedStyle: true
   }
 
   const fileId = uuid()

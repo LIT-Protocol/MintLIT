@@ -91,12 +91,12 @@ export default function Info (props) {
       </Grid>
       {locked
         ? (
-          <Typography variant='h6'>
+          <Typography variant='h5'>
             LOCKED
           </Typography>
           )
         : (
-          <Typography variant='h6'>
+          <Typography variant='h5'>
             UNLOCKED
           </Typography>
           )}

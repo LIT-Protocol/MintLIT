@@ -5,6 +5,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import Info from './Info'
 import MediaGrid from './MediaGrid'
 
+import { decryptZip } from '../utils/lit'
+
 const useStyles = makeStyles(theme => ({
   mediaGrid: {
     padding: theme.spacing(1),
@@ -19,15 +21,24 @@ export default function Presentation (props) {
     description,
     quantity,
     socialMediaUrl,
-    files,
-    backgroundImage
+    publicFiles,
+    lockedFiles,
+    backgroundImage,
+    previewMode,
+    lockedFilesForPreview
   } = props
   const classes = useStyles()
   const [locked, setLocked] = useState(true)
+  const [decryptedFiles, setDecryptedFiles] = useState(null)
 
-  const handleToggleLock = () => {
+  const handleToggleLock = async () => {
     if (locked) {
       // unlock
+      if (!decryptedFiles && !previewMode) {
+        // need to decrypt the files
+        const files = await decryptZip(lockedFiles, window.encryptedSymmetricKey)
+        setDecryptedFiles(files)
+      }
       setLocked(false)
     } else {
       // lock
@@ -35,7 +46,14 @@ export default function Presentation (props) {
     }
   }
 
-  const showingFiles = files.filter(f => !f.backgroundImage && f.encrypted === !locked)
+  let showingFiles = publicFiles
+  if (!locked) {
+    if (previewMode) {
+      showingFiles = lockedFilesForPreview
+    } else {
+      showingFiles = decryptedFiles
+    }
+  }
 
   return (
     <>
@@ -47,9 +65,14 @@ export default function Presentation (props) {
         locked={locked}
         handleToggleLock={handleToggleLock}
       />
-      <div style={{ backgroundImage: `url(${backgroundImage?.dataUrl})` }} className={classes.mediaGrid}>
-        <MediaGrid files={showingFiles} />
-      </div>
+      {showingFiles.length > 0
+        ? (
+          <div style={{ backgroundImage: `url(${backgroundImage?.dataUrl})` }} className={classes.mediaGrid}>
+            <MediaGrid files={showingFiles} />
+          </div>
+          )
+        : null}
+
     </>
   )
 }
