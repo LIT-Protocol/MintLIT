@@ -2,6 +2,7 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const { recoverPersonalSignature, normalize } = require('eth-sig-util')
 const { bugsnagWrapper } = require('./bugsnag.js')
+const { getTokenMetadata } = require('./utils.js')
 const uuid = require('uuid-v4')
 
 admin.initializeApp()
@@ -9,6 +10,17 @@ admin.initializeApp()
 const db = admin.firestore()
 const bucket = admin.storage().bucket()
 const storage = admin.storage()
+
+const LIT_CHAINS = {
+  polygon: {
+    contractAddress: '0xb9A323711528D0c5a70df790929f4739f1cDd7fD',
+    chainId: 137
+  },
+  ethereum: {
+    contractAddress: '0x55485885e82E25446DEC314Ccb810Bda06B9e01B',
+    chainId: 1
+  }
+}
 
 exports.savePublicKey = functions.https.onCall(bugsnagWrapper(async (data, context) => {
   const { sig, msg, pubkey } = data
@@ -114,4 +126,20 @@ exports.createTokenMetadata = functions.https.onCall(bugsnagWrapper(async (data,
   })
 
   return { success: true }
+}))
+
+exports.getPolygonTokenMetadata = functions.https.onRequest(bugsnagWrapper(async (req, res) => {
+  const pathParts = req.path.split('/')
+  const tokenId = pathParts[pathParts.length - 1]
+
+  const chain = 'polygon'
+  const tokenAddress = normalize(LIT_CHAINS[chain].contractAddress)
+  console.log(`getting token metadata for chain ${chain} and tokenAddress ${tokenAddress} and tokenId ${tokenId}`)
+  const metadata = await getTokenMetadata({
+    db,
+    chain,
+    tokenAddress,
+    tokenId
+  })
+  res.json(metadata)
 }))

@@ -28,7 +28,17 @@ import LitJsSdk from 'lit-js-sdk'
 import Presentation from './components/Presentation'
 import { getUploadUrl, createTokenMetadata } from './utils/cloudFunctions'
 import { fileToDataUrl } from './utils/browser'
-import { createHtmlWrapper, createMediaGridHtmlString } from './utils/lit'
+import {
+  createHtmlWrapper,
+  createMediaGridHtmlString
+
+} from './utils/lit'
+import {
+
+  openseaUrl,
+  transactionUrl
+
+} from './utils/urls'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -85,15 +95,20 @@ export default function Mint () {
   const [minting, setMinting] = useState(false)
   const [mintingComplete, setMintingComplete] = useState(false)
   const [backgroundImage, setBackgroundImage] = useState(null)
+  const [tokenId, setTokenId] = useState(null)
 
-  useEffect(() => {
-    // get presigned upload url
+  const getPresignedUploadUrl = () => {
     getUploadUrl()
       .then(data => {
         setUploadUrl(data.uploadUrl)
         setFileId(data.fileId)
         setFilePath(data.filePath)
       })
+  }
+
+  useEffect(() => {
+    // get presigned upload url
+    getPresignedUploadUrl()
   }, [])
 
   const handleConnectWallet = async () => {
@@ -140,6 +155,7 @@ export default function Mint () {
 
     console.log('minting')
     const { tokenId, tokenAddress, mintingAddress, txHash, errorCode } = await LitJsSdk.mintLIT({ chain, quantity })
+    setTokenId(tokenId)
     await uploadPromise
 
     if (errorCode) {
@@ -256,6 +272,23 @@ export default function Mint () {
       tempFiles[i].encrypted = true
       return tempFiles
     })
+  }
+
+  const handleMintAnother = () => {
+    setMintingComplete(false)
+    setMinting(false)
+    setError('')
+    setIncludedFiles([])
+    setTitle('')
+    setDescription('')
+    setQuantity(1)
+    setSocialMediaUrl('')
+    setUploadUrl('')
+    setFilePath('')
+    setFileId('')
+    setBackgroundImage(null)
+    setTokenId(null)
+    getPresignedUploadUrl()
   }
 
   return (
@@ -485,7 +518,7 @@ export default function Mint () {
             )
           : null}
 
-        {minting
+        {minting && !mintingComplete
           ? (
             <div>
               <div style={{ height: 16 }} />
@@ -496,7 +529,7 @@ export default function Mint () {
           : null}
 
         {
-          includedFiles.length > 0 && !minting
+          includedFiles.length > 0 && !minting && !mintingComplete
             ? (
               <>
                 <div style={{ height: 16 }} />
@@ -522,6 +555,25 @@ export default function Mint () {
               )
             : null
           }
+
+        {mintingComplete
+          ? (
+            <Card>
+              <CardContent>
+                <Typography variant='h6'>Your token has been minted</Typography>
+                <Link href={transactionUrl({ chain, tokenId })}>View Transaction</Link>
+                <br />
+                <Link href={openseaUrl({ chain, tokenId })}>View on Opensea</Link>
+                <div style={{ height: 24 }} />
+                <Button
+                  onClick={handleMintAnother}
+                >
+                  Mint Another
+                </Button>
+              </CardContent>
+            </Card>
+            )
+          : null}
       </Container>
 
     </div>

@@ -11,7 +11,8 @@ import LockIcon from '@material-ui/icons/Lock'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    textAlign: 'center'
   },
   leftAlignedText: {
     textAlign: 'left'
@@ -71,6 +72,7 @@ export default function Info (props) {
           {locked
             ? (
               <Button
+                id='unlockButton'
                 onClick={handleToggleLock}
                 variant='contained'
                 startIcon={<LockOpenIcon />}
@@ -91,7 +93,7 @@ export default function Info (props) {
       </Grid>
       {locked
         ? (
-          <Typography variant='h5'>
+          <Typography id='lockedHeader' variant='h5'>
             LOCKED
           </Typography>
           )

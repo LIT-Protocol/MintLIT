@@ -5,8 +5,7 @@ import Grid from '@material-ui/core/Grid'
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: theme.spacing(3),
-    display: 'inline-block'
+    margin: theme.spacing(3)
   },
   imageAndVideo: {
     objectFit: 'contain',
