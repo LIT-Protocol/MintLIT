@@ -96,6 +96,7 @@ export default function Mint () {
   const [mintingComplete, setMintingComplete] = useState(false)
   const [backgroundImage, setBackgroundImage] = useState(null)
   const [tokenId, setTokenId] = useState(null)
+  const [litNodeClient, setLitNodeClient] = useState(null)
 
   const getPresignedUploadUrl = () => {
     getUploadUrl()
@@ -109,6 +110,10 @@ export default function Mint () {
   useEffect(() => {
     // get presigned upload url
     getPresignedUploadUrl()
+    const client = new LitJsSdk.LitNodeClient()
+    client.connect()
+    setLitNodeClient(client)
+    window.litNodeClient = client
   }, [])
 
   const handleConnectWallet = async () => {
