@@ -97,6 +97,7 @@ export default function Mint () {
   const [backgroundImage, setBackgroundImage] = useState(null)
   const [tokenId, setTokenId] = useState(null)
   const [litNodeClient, setLitNodeClient] = useState(null)
+  const [fileUrl, setFileUrl] = useState('')
 
   const getPresignedUploadUrl = () => {
     getUploadUrl()
@@ -117,7 +118,7 @@ export default function Mint () {
   }, [])
 
   const handleConnectWallet = async () => {
-    await LitJsSdk.checkAndDeriveKeypair()
+    await LitJsSdk.checkAndSignAuthMessage()
   }
 
   const handleSubmit = async () => {
@@ -128,40 +129,10 @@ export default function Mint () {
     console.log('encrypting locked files')
     const lockedFiles = includedFiles.filter(f => !f.backgroundImage && f.encrypted)
     const lockedFileMediaGridHtml = createMediaGridHtmlString({ files: lockedFiles })
-    const { encryptedSymmetricKey, encryptedZip } = await LitJsSdk.zipAndEncryptString(lockedFileMediaGridHtml)
-
-    // package up all the stuffs
-    console.log('creating html wrapper')
-    const htmlString = await createHtmlWrapper({
-      encryptedSymmetricKey,
-      title,
-      description,
-      quantity,
-      socialMediaUrl,
-      backgroundImage,
-      publicFiles: includedFiles.filter(f => !f.backgroundImage && !f.encrypted),
-      lockedFiles: await fileToDataUrl(encryptedZip)
-    })
-
-    console.log('uploading html')
-    const litHtmlBlob = new Blob(
-      [htmlString],
-      { type: 'text/html' }
-    )
-    // upload file while minting on chain
-    const uploadPromise = fetch(uploadUrl, {
-      method: 'PUT',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'text/html'
-      },
-      body: litHtmlBlob
-    })
+    const { symmetricKey, encryptedZip } = await LitJsSdk.zipAndEncryptString(lockedFileMediaGridHtml)
 
     console.log('minting')
-    const { tokenId, tokenAddress, mintingAddress, txHash, errorCode } = await LitJsSdk.mintLIT({ chain, quantity })
-    setTokenId(tokenId)
-    await uploadPromise
+    const { tokenId, tokenAddress, mintingAddress, txHash, errorCode, authSig } = await LitJsSdk.mintLIT({ chain, quantity })
 
     if (errorCode) {
       if (errorCode === 'wrong_chain') {
@@ -181,9 +152,51 @@ export default function Mint () {
       return
     }
 
+    setTokenId(tokenId)
+
+    // package up all the stuffs
+    console.log('creating html wrapper')
+    const htmlString = await createHtmlWrapper({
+      title,
+      description,
+      quantity,
+      socialMediaUrl,
+      backgroundImage,
+      publicFiles: includedFiles.filter(f => !f.backgroundImage && !f.encrypted),
+      lockedFiles: await fileToDataUrl(encryptedZip),
+      tokenAddress,
+      tokenId,
+      chain
+    })
+
+    console.log('uploading html')
+    const litHtmlBlob = new Blob(
+      [htmlString],
+      { type: 'text/html' }
+    )
+    // upload file while minting on chain
+    const uploadPromise = fetch(uploadUrl, {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'text/html'
+      },
+      body: litHtmlBlob
+    })
+
+    await litNodeClient.saveEncryptionKey({
+      tokenAddress,
+      tokenId,
+      symmetricKey,
+      authSig,
+      chain
+    })
+
+    await uploadPromise
+
     console.log('creating token metadata on server')
     // save token metadata
-    createTokenMetadata({
+    const { fileUrl } = await createTokenMetadata({
       chain,
       tokenAddress,
       tokenId,
@@ -194,10 +207,9 @@ export default function Mint () {
       mintingAddress,
       filePath,
       fileId,
-      encryptedSymmetricKey,
       txHash
     })
-
+    setFileUrl(fileUrl)
     setMinting(false)
     setMintingComplete(true)
   }
@@ -565,7 +577,10 @@ export default function Mint () {
           ? (
             <Card>
               <CardContent>
-                <Typography variant='h6'>Your token has been minted</Typography>
+                <Typography variant='h6'>Token minted!</Typography>
+                <Typography variant='h5'>
+                  You can find it <Link target='_blank' rel='noreferrer' variant='inherit' href={fileUrl}>here</Link>
+                </Typography>
                 <Link href={transactionUrl({ chain, tokenId })}>View Transaction</Link>
                 <br />
                 <Link href={openseaUrl({ chain, tokenId })}>View on Opensea</Link>

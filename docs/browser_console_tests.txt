@@ -1,0 +1,199 @@
+
+let authSig = JSON.parse(localStorage.getItem('lit-auth-signature'))
+await litNodeClient.saveEncryptionKey ({ tokenAddress: '0xb9A323711528D0c5a70df790929f4739f1cDd7fD', tokenId: '1', symmetricKey: 'testing', authSig, chain: 'polygon' })
+
+
+let authSig = JSON.parse(localStorage.getItem('lit-auth-signature'))
+await litNodeClient.getEncryptionKey ({ tokenAddress: '0xb9A323711528D0c5a70df790929f4739f1cDd7fD', tokenId: '1', authSig, chain: 'polygon' })
+
+
+
+
+{
+  "ns": "pw",
+  "el": "embedded",
+  "cpn": "c9OR3Xd7k2lv9Jv1",
+  "docid": "AF1QipPUx--52BJdsM8s_n1K8JliYeJ9SbcS9_ogam7f",
+  "ver": 2,
+  "cmt": "5.715",
+  "fmt": "137",
+  "fs": "0",
+  "rt": "13.262",
+  "euri": "https://photos.google.com/",
+  "lact": 1,
+  "cl": "371998613",
+  "mos": 0,
+  "state": "4",
+  "volume": 100,
+  "cbrand": "apple",
+  "cbr": "Chrome",
+  "cbrver": "90.0.4430.85",
+  "c": "WEB_EMBEDDED_PLAYER",
+  "cver": "1.20210503.1.1",
+  "cplayer": "UNIPLAYER",
+  "cos": "Macintosh",
+  "cosver": "10_15_7",
+  "cplatform": "DESKTOP",
+  "hl": "en_US",
+  "cr": "US",
+  "len": "88.376",
+  "fexp": "23969934,23983296,23995927,23999758,24001373,24006795,24007246,24012117,24014440,24022926,24033003",
+  "afmt": "140",
+  "muted": "0",
+  "au_d": "und.4",
+  "vct": "5.715",
+  "vd": "88.376",
+  "vpl": "0.000-5.715",
+  "vbu": "0.000-28.000",
+  "vpa": "1",
+  "vsk": "0",
+  "ven": "0",
+  "vpr": "1",
+  "vrs": "4",
+  "vns": "2",
+  "vec": "null",
+  "vemsg": "",
+  "vvol": "1",
+  "vdom": "1",
+  "vsrc": "1",
+  "vw": "1920",
+  "vh": "1080",
+  "lct": "5.715",
+  "lsk": false,
+  "lmf": false,
+  "lbw": "3517555.556",
+  "lhd": "0.092",
+  "lst": "0.000",
+  "laa": "itag_140_type_3_seg_3_time_30.0-39.9_off_0_len_161576_end_1",
+  "lva": "itag_137_type_3_seg_4_time_22.4-28.0_off_0_len_585178_end_1",
+  "lar": "itag_140_type_3_seg_3_time_30.0-39.9_off_0_len_159744_end_1",
+  "lvr": "itag_137_type_3_seg_5_time_28.0-33.6_off_0_len_5389999.3_end_1",
+  "laq": "0",
+  "lvq": "687193",
+  "lab": "0.000-39.938",
+  "lvb": "0.000-28.000",
+  "relative_loudness": "NaN",
+  "optimal_format": "1080p",
+  "user_qual": 0,
+  "debug_videoId": "AF1QipPUx--52BJdsM8s_n1K8JliYeJ9SbcS9_ogam7f",
+  "0sz": false,
+  "op": "",
+  "yof": false,
+  "dis": "",
+  "gpu": "AMD_Radeon_Pro_5500M_OpenGL_Engine",
+  "cgr": true,
+  "debug_playbackQuality": "hd1080",
+  "debug_date": "Thu May 06 2021 12:30:20 GMT-0400 (Eastern Daylight Time)"
+}
+
+
+
+
+Ss
+
+let authSig = JSON.parse(localStorage.getItem('lit-auth-signature'))
+await litNodeClient.getEncryptionKeyFragments ({ tokenAddress: '0xb9A323711528D0c5a70df790929f4739f1cDd7fD', tokenId: '1', authSig, chain: 'polygon' })
+
+
+
+let authSig = JSON.parse(localStorage.getItem('lit-auth-signature'))
+await litNodeClient.getDataFromNode ({ peerId: '12D3KooWK1KtaAV5rWjbAmZcd62VYSmEz1k81jzr87JAcSS7rKdQ', keyId: 'QmNmTHq2JpiJiD9m3UXsnnXxySbXyoBEGLVoEYj8M8Ckan', tokenAddress: '0xb9A323711528D0c5a70df790929f4739f1cDd7fD', tokenId: '1', authSig, chain: 'polygon' })
+
+
+Could I use the ethereumjs evm to validate an eth txn?  Given a smart contract and a tx hash, I want to prove that an eth txn is valid, and that the smart contract ended up at a given state.  Is there anything close to an example of this kind of thing that someone could point me at?
+
+
+
+to: 0x0f6F2d097B34991Fa56CbAcfb5FDC378DF2514a7
+parentId: 274450576075369246884065779466218120012
+childId: 104083400319939201624507319011275975544
+
+
+// fill with your info
+var authToken = "MTX5MzQ1MjAyMjU0NjA2MzM2.ROFLMAO.UvqZqBMXLpDuOY3Z456J3JRIfbk";
+var authorId = "112233445566778899";
+var channelId = "112233445566778899";
+var firstMessageId = "";
+
+deleteMessages(authToken, authorId, channelId, firstMessageId);
+
+
+
+
+
+OE_SEAL_PLUGINS?= gcmaes
+
+define oe-config
+$(or $(shell pkg-config oe$(strip $1)),	\
+	$(error Have you sourced 'openenclaverc'?))
+endef
+#
+# Seal plug-ins are located in BUILD_TYPE specific locations.
+# This Makefile searches plug-ins in the following order.
+#
+OE_SDK_BUILD_TYPES?= Release RelWithDebInfo MinSizeRel Debug
+
+ENCLAVE_CFLAGS:= $(call oe-config,enclave-$(C_COMPILER) --cflags)
+ENCLAVE_CXXFLAGS:= $(call oe-config,enclave-$(CXX_COMPILER) --cflags)
+ENCLAVE_LDFLAGS:= $(call oe-config,enclave-$(C_COMPILER) --libs)
+ENCLAVE_LDFLAGS+= $(call oe-config,enclave-$(C_COMPILER) --variable=$(OE_CRYPTO_LIB)libs)
+
+HOST_CFLAGS:= $(call oe-config,host-$(C_COMPILER) --cflags)
+HOST_CXXFLAGS:= $(call oe-config,host-$(CXX_COMPILER) --cflags)
+HOST_LDFLAGS:= $(call oe-config,host-$(C_COMPILER) --libs)
+
+INCDIR:= $(call oe-config,enclave-$(CXX_COMPILER) --variable=includedir)
+LIBDIR:= $(call oe-config,enclave-$(C_COMPILER) --variable=libdir)/openenclave
+#
+# Seal plug-ins are searched in two steps.
+#
+
+# Step 1 - Determine BUILD_TYPE (hence the directory containing seal plug-ins)
+SEAL_PLUGIN_DIR:= $(or $(firstword $(wildcard $(addsuffix /,	\
+	$(addprefix $(LIBDIR)/enclave/objects-,$(OE_SDK_BUILD_TYPES))))),	\
+	$(error Cannot determine CMAKE_BUILD_TYPE. Object paths:	\
+		$(shell find $(LIBDIR)/enclave -type d -name objects-*)))
+
+# Step 2 - Locate seal plug-in object files.
+SEAL_PLUGINS:= $(foreach p,$(OE_SEAL_PLUGINS),$(or	\
+	$(wildcard $(SEAL_PLUGIN_DIR)oeseal_$p/*.o),	\
+	$(wildcard $(SEAL_PLUGIN_DIR)oeseal_$p-lvi-cfg/*.o),	\
+	$(error Seal plug-in \'$p\' missing in $(SEAL_PLUGIN_DIR))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+clang-8 -o litenc lit_t.o enc.o /opt/openenclave/share/pkgconfig/../../lib/openenclave/enclave/objects-RelWithDebInfo/oeseal_gcmaes/seal_gcmaes.c.o -L/opt/openenclave/share/pkgconfig/../../lib/openenclave/enclave -nostdlib -nodefaultlibs -nostartfiles -Wl,--no-undefined -Wl,-Bstatic -Wl,-Bsymbolic -Wl,--export-dynamic -Wl,-pie -Wl,--build-id -Wl,-z,noexecstack -Wl,-z,now -Wl,-gc-sections -loeenclave -loelibc -loesyscall -loecore -L/usr/local/lib -lsodium -L/usr/lib/ -loecryptombedtls -lmbedx509 -lmbedtls -lmbedcrypto -loelibc -loesyscall -loecore
+
+
+
+
+
+
+00000000000000000000000000000208
+0000000000000000
+
+
+
+Replace the shower faucet joint
+
+AAAAAAAAAAAAAAAAAAAAA
+
+
+
+send address, contact #, etc
+

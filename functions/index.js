@@ -93,7 +93,6 @@ exports.createTokenMetadata = functions.https.onCall(bugsnagWrapper(async (data,
     quantity,
     mintingAddress,
     filePath,
-    encryptedSymmetricKey,
     fileId,
     txHash
   } = data
@@ -120,12 +119,7 @@ exports.createTokenMetadata = functions.https.onCall(bugsnagWrapper(async (data,
     txHash
   })
 
-  docRef.collection('encryptedSymmetricKeys').doc(mintingAddress).create({
-    encryptedSymmetricKey,
-    address: normalize(mintingAddress)
-  })
-
-  return { success: true }
+  return { fileUrl, success: true }
 }))
 
 exports.getPolygonTokenMetadata = functions.https.onRequest(bugsnagWrapper(async (req, res) => {

@@ -9,13 +9,15 @@ import MediaGrid from '../components/MediaGrid'
 
 export function createHtmlWrapper ({
   title,
-  encryptedSymmetricKey,
   description,
   quantity,
   socialMediaUrl,
   backgroundImage,
   publicFiles,
-  lockedFiles
+  lockedFiles,
+  tokenAddress,
+  tokenId,
+  chain
 }) {
   const sheets = new ServerStyleSheets()
 
@@ -35,7 +37,9 @@ export function createHtmlWrapper ({
     title,
     htmlBody,
     css,
-    encryptedSymmetricKey,
+    tokenAddress,
+    tokenId,
+    chain,
     encryptedZipDataUrl: lockedFiles
   })
 }
