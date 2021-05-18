@@ -23,10 +23,11 @@ import LockOpenIcon from '@material-ui/icons/LockOpen'
 import LockIcon from '@material-ui/icons/Lock'
 import LandscapeIcon from '@material-ui/icons/Landscape'
 import LandscapeOutlinedIcon from '@material-ui/icons/LandscapeOutlined'
+import { NFTStorage, Blob } from 'nft.storage'
 
 import LitJsSdk from 'lit-js-sdk'
 import Presentation from './components/Presentation'
-import { getUploadUrl, createTokenMetadata } from './utils/cloudFunctions'
+import { createTokenMetadata } from './utils/cloudFunctions'
 import { fileToDataUrl } from './utils/browser'
 import {
   createHtmlWrapper,
@@ -80,6 +81,12 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+const NFT_STORAGE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDg4YzhGRGU0ODIwRWU0MEEwREZkMjUyNjIwYzFlN2YxNGJiNjMxOEMiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYyMTI5NjI5NDI0NSwibmFtZSI6Ik1pbnRMSVQifQ.SgkAWF8ctiERQ60hSCKwHFG-xoxmN2-_1dvRIrawmCA'
+
+const NFTStorageClient = new NFTStorage({ token: NFT_STORAGE_API_KEY })
+
+const PINATA_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJkZTRlMWFkOC0xZDg3LTRlMzMtYmYyMC0zYWE3NjRhODc3YzQiLCJlbWFpbCI6ImNocmlzQGhlbGxvYXByaWNvdC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlfSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNzYyMDg4ZGZjYWI0MGRhNmEzYTIiLCJzY29wZWRLZXlTZWNyZXQiOiIxNWQ1NWMzM2M3YzRjZjkyZTRmNzkxNzYxMjMxNTg5Zjc3NWFmMDNjNGYyOWU5NWE0NTAzNjU4NjRjNzQ2MWJlIiwiaWF0IjoxNjIxMjk5MTUxfQ.rBlfJOgcpDNhecYV2-lNqWg5YRwhN7wvrnmxjRu7LEY'
+
 export default function Mint () {
   const classes = useStyles()
   const [includedFiles, setIncludedFiles] = useState([])
@@ -87,9 +94,6 @@ export default function Mint () {
   const [description, setDescription] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [socialMediaUrl, setSocialMediaUrl] = useState('')
-  const [uploadUrl, setUploadUrl] = useState('')
-  const [filePath, setFilePath] = useState('')
-  const [fileId, setFileId] = useState('')
   const [chain, setChain] = useState('polygon')
   const [error, setError] = useState('')
   const [minting, setMinting] = useState(false)
@@ -98,19 +102,14 @@ export default function Mint () {
   const [tokenId, setTokenId] = useState(null)
   const [litNodeClient, setLitNodeClient] = useState(null)
   const [fileUrl, setFileUrl] = useState('')
-
-  const getPresignedUploadUrl = () => {
-    getUploadUrl()
-      .then(data => {
-        setUploadUrl(data.uploadUrl)
-        setFileId(data.fileId)
-        setFilePath(data.filePath)
-      })
-  }
+  const [txHash, setTxHash] = useState('')
 
   useEffect(() => {
-    // get presigned upload url
-    getPresignedUploadUrl()
+    // listen for LIT network ready event
+    document.addEventListener('lit-ready', function (e) {
+      console.log('LIT network is ready')
+    }, false)
+
     const client = new LitJsSdk.LitNodeClient()
     client.connect()
     setLitNodeClient(client)
@@ -139,7 +138,7 @@ export default function Mint () {
         setError(
           <>
             <Typography variant='body1'>
-              Your metamask or wallet is on the wrong blockchain.  If you are trying to mint on Polygon / Matic, follow <Link target='_blank' rel='noreferrer' href='https://medium.com/stakingbits/setting-up-metamask-for-polygon-matic-network-838058f6d844'>these instructions</Link> to add Polygon to your metamask
+              Your Metamask or wallet is on the wrong blockchain.{/* }  If you are trying to mint on Polygon / Matic, follow <Link target='_blank' rel='noreferrer' href='https://medium.com/stakingbits/setting-up-metamask-for-polygon-matic-network-838058f6d844'>these instructions</Link> to add Polygon to your metamask */}
             </Typography>
           </>
         )
@@ -153,6 +152,7 @@ export default function Mint () {
     }
 
     setTokenId(tokenId)
+    setTxHash(txHash)
 
     // package up all the stuffs
     console.log('creating html wrapper')
@@ -174,14 +174,23 @@ export default function Mint () {
       [htmlString],
       { type: 'text/html' }
     )
-    // upload file while minting on chain
-    const uploadPromise = fetch(uploadUrl, {
-      method: 'PUT',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'text/html'
-      },
-      body: litHtmlBlob
+
+    // const uploadPromise = NFTStorageClient.storeBlob(litHtmlBlob)
+
+    // upload file while saving encryption key on nodes
+    const formData = new FormData()
+    formData.append('file', litHtmlBlob)
+    const uploadPromise = new Promise((resolve, reject) => {
+      fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          Authorization: `Bearer ${PINATA_API_KEY}`
+        },
+        body: formData
+      }).then(response => response.json())
+        .then(data => resolve(data))
+        .catch(err => reject(err))
     })
 
     await litNodeClient.saveEncryptionKey({
@@ -192,11 +201,14 @@ export default function Mint () {
       chain
     })
 
-    await uploadPromise
+    const uploadRespBody = await uploadPromise
+    console.log('uploadresp is ', uploadRespBody)
+    const ipfsCid = uploadRespBody.IpfsHash
+    const fileUrl = `https://ipfs.io/ipfs/${ipfsCid}`
 
     console.log('creating token metadata on server')
     // save token metadata
-    const { fileUrl } = await createTokenMetadata({
+    await createTokenMetadata({
       chain,
       tokenAddress,
       tokenId,
@@ -205,8 +217,8 @@ export default function Mint () {
       socialMediaUrl,
       quantity,
       mintingAddress,
-      filePath,
-      fileId,
+      fileUrl,
+      ipfsCid,
       txHash
     })
     setFileUrl(fileUrl)
@@ -300,12 +312,9 @@ export default function Mint () {
     setDescription('')
     setQuantity(1)
     setSocialMediaUrl('')
-    setUploadUrl('')
-    setFilePath('')
-    setFileId('')
+    setFileUrl('')
     setBackgroundImage(null)
     setTokenId(null)
-    getPresignedUploadUrl()
   }
 
   return (
@@ -581,9 +590,9 @@ export default function Mint () {
                 <Typography variant='h5'>
                   You can find it <Link target='_blank' rel='noreferrer' variant='inherit' href={fileUrl}>here</Link>
                 </Typography>
-                <Link href={transactionUrl({ chain, tokenId })}>View Transaction</Link>
+                <Link target='_blank' rel='noreferrer' href={transactionUrl({ chain, txHash, tokenId })}>View Transaction</Link>
                 <br />
-                <Link href={openseaUrl({ chain, tokenId })}>View on Opensea</Link>
+                <Link target='_blank' rel='noreferrer' href={openseaUrl({ chain, tokenId })}>View on Opensea</Link>
                 <div style={{ height: 24 }} />
                 <Button
                   onClick={handleMintAnother}

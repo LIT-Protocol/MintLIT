@@ -92,16 +92,12 @@ exports.createTokenMetadata = functions.https.onCall(bugsnagWrapper(async (data,
     socialMediaUrl,
     quantity,
     mintingAddress,
-    filePath,
-    fileId,
+    fileUrl,
+    ipfsCid,
     txHash
   } = data
   functions.logger.info('saveTokenMetadata')
   const normalizedTokenAddress = normalize(tokenAddress)
-
-  const file = bucket.file(filePath)
-  await file.makePublic()
-  const fileUrl = file.publicUrl()
 
   // save the metadata
   const docRef = db.collection('tokens').doc(chain).collection(normalizedTokenAddress).doc(tokenId)
@@ -115,11 +111,11 @@ exports.createTokenMetadata = functions.https.onCall(bugsnagWrapper(async (data,
     quantity,
     mintingAddress,
     fileUrl,
-    fileId,
+    ipfsCid,
     txHash
   })
 
-  return { fileUrl, success: true }
+  return { success: true }
 }))
 
 exports.getPolygonTokenMetadata = functions.https.onRequest(bugsnagWrapper(async (req, res) => {

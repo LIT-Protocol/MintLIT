@@ -12,10 +12,11 @@ export function openseaUrl ({
 
 export function transactionUrl ({
   chain,
-  tokenId
+  tokenId,
+  txHash
 }) {
   const tokenAddress = LitJsSdk.LIT_CHAINS[chain].contractAddress
   if (chain === 'polygon') {
-    return `https://explorer-mainnet.maticvigil.com/tokens/${tokenAddress}/instance/${tokenId}/metadata`
+    return `https://explorer-mainnet.maticvigil.com/tx/${txHash}/internal-transactions`
   }
 }
