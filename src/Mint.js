@@ -32,14 +32,12 @@ import { fileToDataUrl } from './utils/browser'
 import {
   createHtmlWrapper,
   createMediaGridHtmlString
-
 } from './utils/lit'
 import {
-
   openseaUrl,
   transactionUrl
-
 } from './utils/urls'
+import Header from './Header'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -103,22 +101,6 @@ export default function Mint () {
   const [litNodeClient, setLitNodeClient] = useState(null)
   const [fileUrl, setFileUrl] = useState('')
   const [txHash, setTxHash] = useState('')
-
-  useEffect(() => {
-    // listen for LIT network ready event
-    document.addEventListener('lit-ready', function (e) {
-      console.log('LIT network is ready')
-    }, false)
-
-    const client = new LitJsSdk.LitNodeClient()
-    client.connect()
-    setLitNodeClient(client)
-    window.litNodeClient = client
-  }, [])
-
-  const handleConnectWallet = async () => {
-    await LitJsSdk.checkAndSignAuthMessage()
-  }
 
   const handleSubmit = async () => {
     setMinting(true)
@@ -193,7 +175,7 @@ export default function Mint () {
         .catch(err => reject(err))
     })
 
-    await litNodeClient.saveEncryptionKey({
+    await window.litNodeClient.saveEncryptionKey({
       tokenAddress,
       tokenId,
       symmetricKey,
@@ -319,23 +301,7 @@ export default function Mint () {
 
   return (
     <div className={classes.root}>
-      <div className={classes.header}>
-        <Grid
-          container
-          justify='space-between'
-        >
-          <Grid item>
-            <Typography variant='h6'>
-              LIT Minter
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Button onClick={handleConnectWallet}>
-              Connect Wallet
-            </Button>
-          </Grid>
-        </Grid>
-      </div>
+      <Header />
       <div style={{ height: 24 }} />
       <Container maxWidth='lg'>
         <Card>

@@ -4,6 +4,8 @@ import './index.css'
 import AppRouter from './AppRouter'
 import reportWebVitals from './reportWebVitals'
 
+import LitJsSdk from 'lit-js-sdk'
+
 import Bugsnag from '@bugsnag/js'
 import BugsnagPluginReact from '@bugsnag/plugin-react'
 
@@ -14,6 +16,15 @@ Bugsnag.start({
 
 const ErrorBoundary = Bugsnag.getPlugin('react')
   .createErrorBoundary(React)
+
+// listen for LIT network ready event
+document.addEventListener('lit-ready', function (e) {
+  console.log('LIT network is ready')
+}, false)
+
+const client = new LitJsSdk.LitNodeClient()
+client.connect()
+window.litNodeClient = client
 
 ReactDOM.render(
   <React.StrictMode>

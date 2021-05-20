@@ -4,16 +4,21 @@ import {
   Route
 } from 'react-router-dom'
 import Mint from './Mint'
-import Decrypt from './Decrypt'
+import View from './View'
+import Transfer from './Transfer'
 
 const URL_MAP = {
   home: {
     path: '/',
     component: props => <Mint {...props} />
   },
-  redirectPage: {
-    path: '/decrypt',
-    component: props => <Decrypt {...props} />
+  view: {
+    path: '/view',
+    component: props => <View {...props} />
+  },
+  transfer: {
+    path: '/transfer',
+    component: props => <Transfer {...props} />
   }
 }
 
