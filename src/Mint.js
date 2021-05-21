@@ -102,6 +102,10 @@ export default function Mint () {
   const [fileUrl, setFileUrl] = useState('')
   const [txHash, setTxHash] = useState('')
 
+  useEffect(() => {
+    window.LitJsSdk = LitJsSdk // for debug
+  }, [])
+
   const handleSubmit = async () => {
     setMinting(true)
     setMintingComplete(false)
@@ -175,12 +179,16 @@ export default function Mint () {
         .catch(err => reject(err))
     })
 
+    const { balanceStorageSlot } = LitJsSdk.LIT_CHAINS[chain]
+    const merkleProof = await LitJsSdk.getMerkleProof({ tokenAddress, balanceStorageSlot, tokenId })
+
     await window.litNodeClient.saveEncryptionKey({
       tokenAddress,
       tokenId,
       symmetricKey,
       authSig,
-      chain
+      chain,
+      merkleProof
     })
 
     const uploadRespBody = await uploadPromise
