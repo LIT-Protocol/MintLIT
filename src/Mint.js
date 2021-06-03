@@ -98,7 +98,6 @@ export default function Mint () {
   const [mintingComplete, setMintingComplete] = useState(false)
   const [backgroundImage, setBackgroundImage] = useState(null)
   const [tokenId, setTokenId] = useState(null)
-  const [litNodeClient, setLitNodeClient] = useState(null)
   const [fileUrl, setFileUrl] = useState('')
   const [txHash, setTxHash] = useState('')
 
@@ -194,7 +193,7 @@ export default function Mint () {
     const uploadRespBody = await uploadPromise
     console.log('uploadresp is ', uploadRespBody)
     const ipfsCid = uploadRespBody.IpfsHash
-    const fileUrl = `https://ipfs.io/ipfs/${ipfsCid}`
+    const fileUrl = `https://ipfs.litgateway.com/ipfs/${ipfsCid}`
 
     console.log('creating token metadata on server')
     console.log(`chain: ${chain}, tokenAddress: ${tokenAddress}, tokenId: ${tokenId}`)

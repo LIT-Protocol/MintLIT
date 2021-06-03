@@ -7,10 +7,12 @@ import Grid from '@material-ui/core/Grid'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Container from '@material-ui/core/Container'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import LitJsSdk from 'lit-js-sdk'
 
 import Header from './Header'
+import TokenViewGrid from './ViewComponents/TokenViewGrid'
 import { getMetadata } from './utils/firestore'
 
 const useStyles = makeStyles(theme => ({
@@ -20,18 +22,34 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 1300,
     marginLeft: 'auto',
     marginRight: 'auto'
+  },
+  frameContainer: {
+    position: 'relative',
+    width: '100%',
+    paddingTop: '75%'
+  },
+  frame: {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    bottom: '0',
+    right: '0',
+    width: '100%',
+    height: '100%'
   }
 }))
 
 export default function View () {
   const classes = useStyles()
+  const [tokenMetadata, setTokenMetadata] = useState(null)
 
   useEffect(async () => {
-    const chain = 'polygon'
-    const tokenIds = await LitJsSdk.findLITs({ chain })
+    const { tokenIds, chain } = await LitJsSdk.findLITs()
     console.log('tokenIds', tokenIds)
+    console.log('chain', chain)
     const metadata = await getMetadata({ tokenIds, chain })
     console.log(metadata)
+    setTokenMetadata(metadata)
   }, [])
 
   return (
@@ -41,7 +59,11 @@ export default function View () {
       <Container maxWidth='lg'>
         <Card>
           <CardContent>
-            hi
+            {tokenMetadata
+              ? (
+                <TokenViewGrid tokenMetadata={tokenMetadata} />
+                )
+              : <CircularProgress />}
           </CardContent>
         </Card>
       </Container>

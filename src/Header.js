@@ -40,11 +40,11 @@ export default function Header () {
                 View your LITs
               </Link>
             </Grid>
-            <Grid item>
-              <Link component={RouterLink} to='/transfer'>
-                Transfer your LITs
-              </Link>
-            </Grid>
+            {/* <Grid item> */}
+            {/*   <Link component={RouterLink} to='/transfer'> */}
+            {/*     Transfer your LITs */}
+            {/*   </Link> */}
+            {/* </Grid> */}
             <Grid item>
               <Link href='https://litprotocol.com'>🔥</Link>
             </Grid>
