@@ -197,11 +197,12 @@ export default function Mint () {
     const fileUrl = `https://ipfs.io/ipfs/${ipfsCid}`
 
     console.log('creating token metadata on server')
+    console.log(`chain: ${chain}, tokenAddress: ${tokenAddress}, tokenId: ${tokenId}`)
     // save token metadata
     await createTokenMetadata({
       chain,
       tokenAddress,
-      tokenId,
+      tokenId: tokenId.toString(),
       title,
       description,
       socialMediaUrl,

@@ -46,7 +46,7 @@ export default function Presentation (props) {
         locked={locked}
         handleToggleLock={handleToggleLock}
       />
-      <div id='mediaGridHolder' style={{ backgroundImage: `url(${backgroundImage?.dataUrl})` }} className={classes.mediaGridHolder}>
+      <div id='mediaGridHolder' style={backgroundImage ? { backgroundImage: `url(${backgroundImage?.dataUrl})` } : {}} className={classes.mediaGridHolder}>
         <MediaGrid files={showingFiles} />
       </div>
     </Container>

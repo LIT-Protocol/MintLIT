@@ -22,6 +22,12 @@ document.addEventListener('lit-ready', function (e) {
   console.log('LIT network is ready')
 }, false)
 
+// for dev
+// const client = new LitJsSdk.LitNodeClient({
+//   alertWhenUnauthorized: true,
+//   minNodeCount: 8,
+//   bootstrapUrls: ['/dns4/dev1.litgateway.com/tcp/9090/https/p2p-webrtc-direct/p2p/12D3KooWK1KtaAV5rWjbAmZcd62VYSmEz1k81jzr87JAcSS7rKdQ']
+// })
 const client = new LitJsSdk.LitNodeClient()
 client.connect()
 window.litNodeClient = client

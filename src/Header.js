@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import { Link as RouterLink } from 'react-router-dom'
 import Link from '@material-ui/core/Link'
+import GitHubIcon from '@material-ui/icons/GitHub'
 
 import LitJsSdk from 'lit-js-sdk'
 
@@ -15,10 +16,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function Header () {
   const classes = useStyles()
-
-  const handleConnectWallet = async () => {
-    await LitJsSdk.checkAndSignAuthMessage()
-  }
 
   return (
     <div className={classes.header}>
@@ -48,12 +45,13 @@ export default function Header () {
                 Transfer your LITs
               </Link>
             </Grid>
+            <Grid item>
+              <Link href='https://litprotocol.com'>🔥</Link>
+            </Grid>
+            <Grid item>
+              <Link href='https://github.com/LIT-Protocol/MintLIT'><GitHubIcon /></Link>
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid item>
-          <Button onClick={handleConnectWallet}>
-            Connect Wallet
-          </Button>
         </Grid>
       </Grid>
     </div>

@@ -11,6 +11,7 @@ import Container from '@material-ui/core/Container'
 import LitJsSdk from 'lit-js-sdk'
 
 import Header from './Header'
+import { getMetadata } from './utils/firestore'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,6 +25,14 @@ const useStyles = makeStyles(theme => ({
 
 export default function View () {
   const classes = useStyles()
+
+  useEffect(async () => {
+    const chain = 'polygon'
+    const tokenIds = await LitJsSdk.findLITs({ chain })
+    console.log('tokenIds', tokenIds)
+    const metadata = await getMetadata({ tokenIds, chain })
+    console.log(metadata)
+  }, [])
 
   return (
     <div className={classes.root}>
