@@ -49,7 +49,7 @@ export default function View () {
     console.log('chain', chain)
     const metadata = await getMetadata({ tokenIds, chain })
     console.log(metadata)
-    setTokenMetadata(metadata)
+    setTokenMetadata([metadata[0]])
   }, [])
 
   return (

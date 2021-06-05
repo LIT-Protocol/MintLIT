@@ -115,10 +115,10 @@ export default function TokenViewGrid (props) {
       <div className={classes.frameContainer}>
         <iframe
           title={t.title}
-          sandbox='allow-forms allow-scripts allow-popups allow-same-origin allow-modals allow-popups-to-escape-sandbox'
-          allowfullscreen
+          sandbox='allow-forms allow-scripts allow-popups  allow-modals allow-popups-to-escape-sandbox'
+          allowFullScreen
           className={classes.frame}
-          src={t.fileUrl}
+          src='http://localhost:8000/tst.html'
           loading='lazy'
           allow='accelerometer; ambient-light-sensor; autoplay; battery; camera; display-capture; encrypted-media; fullscreen; geolocation; gyroscope; layout-animations; legacy-image-formats; magnetometer; microphone; midi; payment; picture-in-picture; publickey-credentials-get; sync-xhr; usb; vr; screen-wake-lock; web-share; xr-spatial-tracking'
         />
