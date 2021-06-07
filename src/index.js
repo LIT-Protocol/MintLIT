@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import AppRouter from './AppRouter'
 import reportWebVitals from './reportWebVitals'
-import { StylesProvider } from '@material-ui/styles'
+import { create } from 'jss'
+import { StylesProvider, jssPreset } from '@material-ui/core/styles'
 
 import LitJsSdk from 'lit-js-sdk'
 
@@ -23,6 +24,10 @@ document.addEventListener('lit-ready', function (e) {
   console.log('LIT network is ready')
 }, false)
 
+const jss = create({
+  ...jssPreset()
+})
+
 // for dev
 // const client = new LitJsSdk.LitNodeClient({
 //   alertWhenUnauthorized: true,
@@ -36,7 +41,7 @@ window.litNodeClient = client
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoundary>
-      <StylesProvider>
+      <StylesProvider jss={jss}>
         <AppRouter />
       </StylesProvider>
     </ErrorBoundary>
