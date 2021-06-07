@@ -19,6 +19,8 @@ export function createHtmlWrapper ({
   tokenId,
   chain
 }) {
+  // save head before.  this is because ServerStyleSheets will add the styles to the HEAD tag and we need to restore them
+  const HTMLHeadBefore = document.head.innerHTML
   const sheets = new ServerStyleSheets()
 
   const htmlBody = ReactDOMServer.renderToString(sheets.collect(
@@ -32,6 +34,9 @@ export function createHtmlWrapper ({
     />
   ))
   const css = sheets.toString()
+
+  // put head back
+  document.head.innerHTML = HTMLHeadBefore
 
   return LitJsSdk.createHtmlLIT({
     title,
