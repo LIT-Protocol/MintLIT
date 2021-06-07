@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import AppRouter from './AppRouter'
 import reportWebVitals from './reportWebVitals'
+import { StylesProvider } from '@material-ui/styles'
 
 import LitJsSdk from 'lit-js-sdk'
 
@@ -35,7 +36,9 @@ window.litNodeClient = client
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoundary>
-      <AppRouter />
+      <StylesProvider>
+        <AppRouter />
+      </StylesProvider>
     </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById('root')
