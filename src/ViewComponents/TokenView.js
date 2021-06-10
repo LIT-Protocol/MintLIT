@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
@@ -40,6 +40,18 @@ export default function TokenViewGrid (props) {
   const [sending, setSending] = useState(false)
   const [addressToSendTo, setAddressToSendTo] = useState('')
   const [tokenSent, setTokenSent] = useState(false)
+
+  const frameContainerId = `frameContainer_${t.tokenId}`
+
+  useEffect(() => {
+    // load the iframe
+    LitJsSdk.injectViewerIFrame({
+      destinationId: frameContainerId,
+      title: t.title,
+      fileUrl: t.fileUrl,
+      className: classes.frame
+    })
+  }, [])
 
   if (tokenSent) {
     return (
@@ -112,16 +124,7 @@ export default function TokenViewGrid (props) {
           )
         : null}
 
-      <div className={classes.frameContainer}>
-        <iframe
-          title={t.title}
-          sandbox='allow-forms allow-scripts allow-popups  allow-modals allow-popups-to-escape-sandbox allow-same-origin'
-          className={classes.frame}
-          src={t.fileUrl}
-          loading='lazy'
-          allow='accelerometer; ambient-light-sensor; autoplay; battery; camera; display-capture; encrypted-media; fullscreen; geolocation; gyroscope; layout-animations; legacy-image-formats; magnetometer; microphone; midi; payment; picture-in-picture; publickey-credentials-get; sync-xhr; usb; vr; screen-wake-lock; web-share; xr-spatial-tracking'
-        />
-      </div>
+      <div className={classes.frameContainer} id={frameContainerId} />
     </>
   )
 }
