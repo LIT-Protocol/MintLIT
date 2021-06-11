@@ -85,8 +85,9 @@ const NFTStorageClient = new NFTStorage({ token: NFT_STORAGE_API_KEY })
 
 const PINATA_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJkZTRlMWFkOC0xZDg3LTRlMzMtYmYyMC0zYWE3NjRhODc3YzQiLCJlbWFpbCI6ImNocmlzQGhlbGxvYXByaWNvdC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlfSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNzYyMDg4ZGZjYWI0MGRhNmEzYTIiLCJzY29wZWRLZXlTZWNyZXQiOiIxNWQ1NWMzM2M3YzRjZjkyZTRmNzkxNzYxMjMxNTg5Zjc3NWFmMDNjNGYyOWU5NWE0NTAzNjU4NjRjNzQ2MWJlIiwiaWF0IjoxNjIxMjk5MTUxfQ.rBlfJOgcpDNhecYV2-lNqWg5YRwhN7wvrnmxjRu7LEY'
 
-export default function Mint () {
+export default function Mint (props) {
   const classes = useStyles()
+  const { networkLoading } = props
   const [includedFiles, setIncludedFiles] = useState([])
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -309,7 +310,7 @@ export default function Mint () {
 
   return (
     <div className={classes.root}>
-      <Header />
+      <Header networkLoading={networkLoading} />
       <div style={{ height: 24 }} />
       <Container maxWidth='lg'>
         <Card>
@@ -496,7 +497,7 @@ export default function Mint () {
                 <Button
                   onClick={handleSubmit}
                   variant='outlined'
-                  disabled={minting}
+                  disabled={minting || networkLoading}
                 >
                   Submit
                 </Button>

@@ -31,7 +31,8 @@ export default function Info (props) {
     quantity,
     socialMediaUrl,
     locked,
-    handleToggleLock
+    handleToggleLock,
+    previewMode
   } = props
   const classes = useStyles()
 
@@ -53,9 +54,20 @@ export default function Info (props) {
           </Typography>
         </Grid>
         <Grid item className={classes.rightAlignedText}>
-          <Typography variant='subtitle1'>
-            {quantity} edition{quantity > 1 ? 's' : ''}
-          </Typography>
+          {!previewMode
+            ? (
+              <Grid container alignItems='center'>
+                <Grid item>
+                  <div class='lds-ripple' id='loadingSpinner'><div /><div /></div>
+                </Grid>
+                <Grid item>
+                  <Typography variant='subtitle1' id='loadingText'>
+                    Connecting to the LIT Network, please wait...
+                  </Typography>
+                </Grid>
+              </Grid>
+              )
+            : null}
           <div style={{ height: 1 }} />
           {socialMediaUrl
             ? (

@@ -14,19 +14,42 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
-export default function Header () {
+export default function Header (props) {
   const classes = useStyles()
+  const { networkLoading } = props
 
   return (
     <div className={classes.header}>
       <Grid
         container
         justify='space-between'
+        alignItems='center'
       >
         <Grid item>
           <Typography variant='h6'>
             MintLIT
           </Typography>
+        </Grid>
+        <Grid item>
+          {networkLoading
+            ? (
+              <Grid container alignItems='center'>
+                <Grid item>
+                  <div class='lds-ripple' id='loadingSpinner'><div /><div /></div>
+                </Grid>
+                <Grid item>
+                  <Typography variant='subtitle1' id='loadingText'>
+                    Connecting to the 🔥LIT Network...
+                  </Typography>
+                </Grid>
+              </Grid>
+              )
+            : (
+              <Typography variant='subtitle1' id='loadingText'>
+                Connected to the 🔥LIT Network
+              </Typography>
+              )}
+
         </Grid>
         <Grid item>
           <Grid container spacing={3}>

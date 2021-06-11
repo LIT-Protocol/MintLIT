@@ -17,11 +17,6 @@ Bugsnag.start({
 const ErrorBoundary = Bugsnag.getPlugin('react')
   .createErrorBoundary(React)
 
-// listen for LIT network ready event
-document.addEventListener('lit-ready', function (e) {
-  console.log('LIT network is ready')
-}, false)
-
 // for dev
 // const client = new LitJsSdk.LitNodeClient({
 //   alertWhenUnauthorized: true,

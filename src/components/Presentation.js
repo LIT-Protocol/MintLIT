@@ -45,6 +45,7 @@ export default function Presentation (props) {
         socialMediaUrl={socialMediaUrl}
         locked={locked}
         handleToggleLock={handleToggleLock}
+        previewMode={previewMode}
       />
       <div id='mediaGridHolder' style={backgroundImage ? { backgroundImage: `url(${backgroundImage?.dataUrl})` } : {}} className={classes.mediaGridHolder}>
         <MediaGrid files={showingFiles} />

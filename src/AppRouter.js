@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react'
 import {
   BrowserRouter as Router,
   Switch,
@@ -23,6 +24,15 @@ const URL_MAP = {
 }
 
 export default function AppRouter () {
+  const [networkLoading, setNetworkLoading] = useState(true)
+
+  useEffect(() => {
+    // listen for LIT network ready event
+    document.addEventListener('lit-ready', function (e) {
+      console.log('LIT network is ready')
+      setNetworkLoading(false)
+    }, false)
+  }, [])
   return (
     <Router>
       <Switch>
@@ -31,7 +41,7 @@ export default function AppRouter () {
             key={u.path}
             exact
             path={u.path}
-            render={routeProps => u.component(routeProps)}
+            render={routeProps => u.component({ ...routeProps, networkLoading })}
           />
         )}
       </Switch>
