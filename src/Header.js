@@ -35,7 +35,7 @@ export default function Header (props) {
             ? (
               <Grid container alignItems='center'>
                 <Grid item>
-                  <div class='lds-ripple' id='loadingSpinner'><div /><div /></div>
+                  <div className='lds-ripple' id='loadingSpinner'><div /><div /></div>
                 </Grid>
                 <Grid item>
                   <Typography variant='subtitle1' id='loadingText'>

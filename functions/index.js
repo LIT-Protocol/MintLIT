@@ -16,6 +16,10 @@ const LIT_CHAINS = {
     contractAddress: '0xb9A323711528D0c5a70df790929f4739f1cDd7fD',
     chainId: 137
   },
+  fantom: {
+    contractAddress: '0x3110c39b428221012934A7F617913b095BC1078C',
+    chainId: 250
+  },
   ethereum: {
     contractAddress: '0x55485885e82E25446DEC314Ccb810Bda06B9e01B',
     chainId: 1
