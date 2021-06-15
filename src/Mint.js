@@ -489,6 +489,7 @@ export default function Mint (props) {
                     value={chain}
                     onChange={e => setChain(e.target.value)}
                   >
+                    <MenuItem value='fantom'>Fantom</MenuItem>
                     <MenuItem value='polygon'>Polygon</MenuItem>
                     <MenuItem value='ethereum'>Ethereum</MenuItem>
                   </Select>
