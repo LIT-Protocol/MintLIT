@@ -62,7 +62,7 @@ export default function Info (props) {
                 </Grid>
                 <Grid item>
                   <Typography variant='subtitle1' id='loadingText'>
-                    Connecting to the LIT Network, please wait...
+                    Connecting to the LIT Protocol, please wait...
                   </Typography>
                 </Grid>
               </Grid>

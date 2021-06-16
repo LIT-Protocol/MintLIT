@@ -39,14 +39,14 @@ export default function Header (props) {
                 </Grid>
                 <Grid item>
                   <Typography variant='subtitle1' id='loadingText'>
-                    Connecting to the 🔥LIT Network...
+                    Connecting to the 🔥LIT Protocol...
                   </Typography>
                 </Grid>
               </Grid>
               )
             : (
               <Typography variant='subtitle1' id='loadingText'>
-                Connected to the 🔥LIT Network
+                Connected to the 🔥LIT Protocol
               </Typography>
               )}
 
