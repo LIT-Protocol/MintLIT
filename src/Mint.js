@@ -37,6 +37,7 @@ import {
   openseaUrl,
   transactionUrl
 } from './utils/urls'
+import LIT from './abis/LIT.json'
 import Header from './Header'
 
 const useStyles = makeStyles(theme => ({
@@ -179,16 +180,28 @@ export default function Mint (props) {
         .catch(err => reject(err))
     })
 
-    const { balanceStorageSlot } = LitJsSdk.LIT_CHAINS[chain]
-    const merkleProof = await LitJsSdk.getMerkleProof({ tokenAddress, balanceStorageSlot, tokenId })
+    // const { balanceStorageSlot } = LitJsSdk.LIT_CHAINS[chain]
+    // const merkleProof = await LitJsSdk.getMerkleProof({ tokenAddress, balanceStorageSlot, tokenId })
 
     await window.litNodeClient.saveEncryptionKey({
-      tokenAddress,
-      tokenId,
+      accessControlConditions: [
+        {
+          contractAddress: tokenAddress,
+          method: 'balanceOf',
+          parameters: [
+            ':userAddress',
+            tokenId
+          ],
+          returnValueTest: {
+            comparator: '>',
+            value: 0
+          }
+        }
+      ],
       symmetricKey,
       authSig,
-      chain,
-      merkleProof
+      chain
+      // merkleProof
     })
 
     const uploadRespBody = await uploadPromise
@@ -392,24 +405,24 @@ export default function Mint (props) {
                               ? (
                                   file.backgroundImage
                                     ? (
-                                      <Tooltip title='Remove as background image'>
-                                        <IconButton
-                                          size='small'
-                                          onClick={() => handleRemoveAsBackgroundImage(i)}
-                                        >
-                                          <LandscapeOutlinedIcon />
-                                        </IconButton>
-                                      </Tooltip>
+                                    <Tooltip title='Remove as background image'>
+                                      <IconButton
+                                        size='small'
+                                        onClick={() => handleRemoveAsBackgroundImage(i)}
+                                      >
+                                        <LandscapeOutlinedIcon />
+                                      </IconButton>
+                                    </Tooltip>
                                       )
                                     : (
-                                      <Tooltip title='Make background image'>
-                                        <IconButton
-                                          size='small'
-                                          onClick={() => handleSetAsBackgroundImage(i)}
-                                        >
-                                          <LandscapeIcon />
-                                        </IconButton>
-                                      </Tooltip>
+                                    <Tooltip title='Make background image'>
+                                      <IconButton
+                                        size='small'
+                                        onClick={() => handleSetAsBackgroundImage(i)}
+                                      >
+                                        <LandscapeIcon />
+                                      </IconButton>
+                                    </Tooltip>
                                       )
                                 )
                               : null}
@@ -556,7 +569,7 @@ export default function Mint (props) {
               </>
               )
             : null
-          }
+        }
 
         {mintingComplete
           ? (
