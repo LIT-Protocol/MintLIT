@@ -141,6 +141,28 @@ export default function Mint (props) {
     setTokenId(tokenId)
     setTxHash(txHash)
 
+    const accessControlConditions = [
+      {
+        contractAddress: tokenAddress,
+        method: 'balanceOf',
+        parameters: [
+          ':userAddress',
+          tokenId
+        ],
+        returnValueTest: {
+          comparator: '>',
+          value: 0
+        }
+      }
+    ]
+
+    const encryptedSymmetricKey = await window.litNodeClient.saveEncryptionKey({
+      accessControlConditions,
+      symmetricKey,
+      authSig,
+      chain
+    })
+
     // package up all the stuffs
     console.log('creating html wrapper')
     const htmlString = await createHtmlWrapper({
@@ -151,8 +173,8 @@ export default function Mint (props) {
       backgroundImage,
       publicFiles: includedFiles.filter(f => !f.backgroundImage && !f.encrypted),
       lockedFiles: await fileToDataUrl(encryptedZip),
-      tokenAddress,
-      tokenId,
+      accessControlConditions,
+      encryptedSymmetricKey,
       chain
     })
 
@@ -182,27 +204,6 @@ export default function Mint (props) {
 
     // const { balanceStorageSlot } = LitJsSdk.LIT_CHAINS[chain]
     // const merkleProof = await LitJsSdk.getMerkleProof({ tokenAddress, balanceStorageSlot, tokenId })
-
-    await window.litNodeClient.saveEncryptionKey({
-      accessControlConditions: [
-        {
-          contractAddress: tokenAddress,
-          method: 'balanceOf',
-          parameters: [
-            ':userAddress',
-            tokenId
-          ],
-          returnValueTest: {
-            comparator: '>',
-            value: 0
-          }
-        }
-      ],
-      symmetricKey,
-      authSig,
-      chain
-      // merkleProof
-    })
 
     const uploadRespBody = await uploadPromise
     console.log('uploadresp is ', uploadRespBody)

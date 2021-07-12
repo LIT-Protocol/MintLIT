@@ -15,8 +15,8 @@ export function createHtmlWrapper ({
   backgroundImage,
   publicFiles,
   lockedFiles,
-  tokenAddress,
-  tokenId,
+  accessControlConditions,
+  encryptedSymmetricKey,
   chain
 }) {
   // save head before.  this is because ServerStyleSheets will add the styles to the HEAD tag and we need to restore them
@@ -77,8 +77,8 @@ export function createHtmlWrapper ({
     title,
     htmlBody,
     css,
-    tokenAddress,
-    tokenId,
+    accessControlConditions,
+    encryptedSymmetricKey,
     chain,
     encryptedZipDataUrl: lockedFiles
   })
