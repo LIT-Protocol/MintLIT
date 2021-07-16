@@ -147,11 +147,11 @@ export default function Mint (props) {
         method: 'balanceOf',
         parameters: [
           ':userAddress',
-          tokenId
+          tokenId.toString()
         ],
         returnValueTest: {
           comparator: '>',
-          value: 0
+          value: '0'
         }
       }
     ]
