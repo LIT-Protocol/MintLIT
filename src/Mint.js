@@ -37,7 +37,6 @@ import {
   openseaUrl,
   transactionUrl
 } from './utils/urls'
-import LIT from './abis/LIT.json'
 import Header from './Header'
 
 const useStyles = makeStyles(theme => ({
@@ -86,7 +85,7 @@ const NFTStorageClient = new NFTStorage({ token: NFT_STORAGE_API_KEY })
 
 const PINATA_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJkZTRlMWFkOC0xZDg3LTRlMzMtYmYyMC0zYWE3NjRhODc3YzQiLCJlbWFpbCI6ImNocmlzQGhlbGxvYXByaWNvdC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlfSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNzYyMDg4ZGZjYWI0MGRhNmEzYTIiLCJzY29wZWRLZXlTZWNyZXQiOiIxNWQ1NWMzM2M3YzRjZjkyZTRmNzkxNzYxMjMxNTg5Zjc3NWFmMDNjNGYyOWU5NWE0NTAzNjU4NjRjNzQ2MWJlIiwiaWF0IjoxNjIxMjk5MTUxfQ.rBlfJOgcpDNhecYV2-lNqWg5YRwhN7wvrnmxjRu7LEY'
 
-export default function Mint (props) {
+export default function Mint(props) {
   const classes = useStyles()
   const { networkLoading } = props
   const [includedFiles, setIncludedFiles] = useState([])
@@ -94,7 +93,7 @@ export default function Mint (props) {
   const [description, setDescription] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [socialMediaUrl, setSocialMediaUrl] = useState('')
-  const [chain, setChain] = useState('polygon')
+  const [chain, setChain] = useState('fantom')
   const [error, setError] = useState('')
   const [minting, setMinting] = useState(false)
   const [mintingComplete, setMintingComplete] = useState(false)
@@ -144,6 +143,8 @@ export default function Mint (props) {
     const accessControlConditions = [
       {
         contractAddress: tokenAddress,
+        standardContractType: 'ERC1155',
+        chain,
         method: 'balanceOf',
         parameters: [
           ':userAddress',
@@ -382,7 +383,7 @@ export default function Mint (props) {
                           >
                             Included Files
                           </Typography>
-                          )
+                        )
                         : null}
                       {includedFiles.map((file, i) =>
                         <Grid
@@ -404,8 +405,8 @@ export default function Mint (props) {
 
                             {file.type.includes('image')
                               ? (
-                                  file.backgroundImage
-                                    ? (
+                                file.backgroundImage
+                                  ? (
                                     <Tooltip title='Remove as background image'>
                                       <IconButton
                                         size='small'
@@ -414,8 +415,8 @@ export default function Mint (props) {
                                         <LandscapeOutlinedIcon />
                                       </IconButton>
                                     </Tooltip>
-                                      )
-                                    : (
+                                  )
+                                  : (
                                     <Tooltip title='Make background image'>
                                       <IconButton
                                         size='small'
@@ -424,8 +425,8 @@ export default function Mint (props) {
                                         <LandscapeIcon />
                                       </IconButton>
                                     </Tooltip>
-                                      )
-                                )
+                                  )
+                              )
                               : null}
 
                             {file.encrypted
@@ -438,7 +439,7 @@ export default function Mint (props) {
                                     <LockOpenIcon />
                                   </IconButton>
                                 </Tooltip>
-                                )
+                              )
                               : (
                                 <Tooltip title='This file is public.  Click to make it encrypted so only LIT holders will be able to view it'>
                                   <IconButton
@@ -448,7 +449,7 @@ export default function Mint (props) {
                                     <LockIcon />
                                   </IconButton>
                                 </Tooltip>
-                                )}
+                              )}
                             <Tooltip title='Remove file from LIT'>
                               <IconButton
                                 size='small'
@@ -503,9 +504,10 @@ export default function Mint (props) {
                     value={chain}
                     onChange={e => setChain(e.target.value)}
                   >
-                    {/* <MenuItem value='fantom'>Fantom</MenuItem> */}
-                    <MenuItem value='polygon'>Polygon</MenuItem>
                     <MenuItem value='ethereum'>Ethereum</MenuItem>
+                    <MenuItem value='polygon'>Polygon</MenuItem>
+                    <MenuItem value='xdai'>xDai</MenuItem>
+                    <MenuItem value='fantom'>Fantom</MenuItem>
                   </Select>
                 </FormControl>
                 <div style={{ height: 16 }} />
@@ -531,7 +533,7 @@ export default function Mint (props) {
                 </CardContent>
               </Card>
             </>
-            )
+          )
           : null}
 
         {minting && !mintingComplete
@@ -541,7 +543,7 @@ export default function Mint (props) {
               <CircularProgress size={50} />
               <Typography variant='h6'>Minting, please wait...</Typography>
             </div>
-            )
+          )
           : null}
 
         {
@@ -568,7 +570,7 @@ export default function Mint (props) {
                   </CardContent>
                 </Card>
               </>
-              )
+            )
             : null
         }
 
@@ -591,7 +593,7 @@ export default function Mint (props) {
                 </Button>
               </CardContent>
             </Card>
-            )
+          )
           : null}
       </Container>
 
