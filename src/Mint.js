@@ -45,9 +45,9 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     maxWidth: 1300,
     marginLeft: 'auto',
-    marginRight: 'auto'
+    marginRight: 'auto',
+    height: '100%'
   },
-
   error: {
     color: 'red',
     fontSize: 16
@@ -327,7 +327,7 @@ export default function Mint(props) {
     <div className={classes.root}>
       <Header networkLoading={networkLoading} />
       <div style={{ height: 24 }} />
-      <Container maxWidth='lg'>
+      <Container maxWidth='lg' className={classes.fullHeight}>
         <Card>
           <CardContent>
             <Grid
@@ -368,7 +368,7 @@ export default function Mint(props) {
                         type='file'
                         id='file-upload-nft'
                         style={{ display: 'none' }}
-                        accept='video/*,audio/*,image/*'
+                        accept='video/*,audio/*,image/*,application/pdf'
                         onClick={e => e.target.value = ''}
                         onChange={handleMediaChosen}
                         multiple
@@ -555,8 +555,8 @@ export default function Mint(props) {
                   Preview of your LIT
                 </Typography>
                 <div style={{ height: 8 }} />
-                <Card>
-                  <CardContent>
+                <Card className={classes.fullHeight}>
+                  <CardContent className={classes.fullHeight}>
                     <Presentation
                       previewMode
                       title={title}

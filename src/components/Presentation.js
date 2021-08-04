@@ -9,11 +9,15 @@ import Container from '@material-ui/core/Container'
 const useStyles = makeStyles(theme => ({
   mediaGridHolder: {
     backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover'
+    backgroundSize: 'cover',
+    height: '100%'
+  },
+  fullHeight: {
+    height: '100%'
   }
 }))
 
-export default function Presentation (props) {
+export default function Presentation(props) {
   const {
     title,
     description,
@@ -37,7 +41,7 @@ export default function Presentation (props) {
   }
 
   return (
-    <Container maxWidth='lg'>
+    <Container maxWidth='lg' className={classes.fullHeight}>
       <Info
         title={title}
         description={description}

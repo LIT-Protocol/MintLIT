@@ -5,7 +5,8 @@ import Grid from '@material-ui/core/Grid'
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: theme.spacing(3)
+    margin: theme.spacing(3),
+    height: '100%'
   },
   imageAndVideo: {
     objectFit: 'contain',
@@ -22,10 +23,20 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     height: '100%',
     width: '100%'
+  },
+  pdfHolder: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    width: '100%'
+  },
+  fullHeight: {
+    height: '100%'
   }
 }))
 
-export default function MediaGrid (props) {
+export default function MediaGrid(props) {
   const { files } = props
   const classes = useStyles()
   const maxHeight = 400
@@ -56,24 +67,39 @@ export default function MediaGrid (props) {
           Your browser does not support the video tag.
         </video>
       )
+    } else if (file.type.includes('pdf')) {
+      return (
+        <embed
+          src={fileUrl}
+          type="application/pdf"
+          frameBorder="0"
+          scrolling="auto"
+          className={classes.pdfHolder}
+          height="100%"
+          width="100%"
+        ></embed>
+      )
     }
   }
+
 
   const jsx = []
   for (let i = 0; i < files.length; i++) {
     jsx.push(
-      <Grid item key={i} className={classes.mediaHolder}>
+      <Grid item key={i} style={files.length === 1 ? { width: "100%" } : {}}>
         {playerTagForFile(files[i])}
       </Grid>
     )
   }
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={{ height: '100%' }}>
       <Grid
         container
         spacing={1}
         justify='center'
+        className={classes.fullHeight}
+        style={{ height: '100%' }}
       >
         {jsx}
       </Grid>

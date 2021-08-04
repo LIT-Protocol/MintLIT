@@ -7,7 +7,7 @@ import LitJsSdk from 'lit-js-sdk'
 import Presentation from '../components/Presentation'
 import MediaGrid from '../components/MediaGrid'
 
-export function createHtmlWrapper ({
+export function createHtmlWrapper({
   title,
   description,
   quantity,
@@ -84,7 +84,7 @@ export function createHtmlWrapper ({
   })
 }
 
-export function createMediaGridHtmlString ({
+export function createMediaGridHtmlString({
   files
 }) {
   const html = ReactDOMServer.renderToString(
