@@ -583,8 +583,14 @@ export default function Mint(props) {
                   You can find it <Link target='_blank' rel='noreferrer' variant='inherit' href={fileUrl}>here</Link>
                 </Typography>
                 <Link target='_blank' rel='noreferrer' href={transactionUrl({ chain, txHash, tokenId })}>View Transaction</Link>
-                <br />
-                <Link target='_blank' rel='noreferrer' href={openseaUrl({ chain, tokenId })}>View on Opensea</Link>
+                {openseaUrl({ chain, tokenId })
+                  ? (
+                    <>
+                      <br />
+                      <Link target='_blank' rel='noreferrer' href={openseaUrl({ chain, tokenId })}>View on Opensea</Link>
+                    </>
+                  ) : null
+                }
                 <div style={{ height: 24 }} />
                 <Button
                   onClick={handleMintAnother}
