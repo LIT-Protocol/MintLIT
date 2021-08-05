@@ -86,7 +86,7 @@ export default function MediaGrid(props) {
   const jsx = []
   for (let i = 0; i < files.length; i++) {
     jsx.push(
-      <Grid item key={i} style={files.length === 1 ? { width: "100%" } : {}}>
+      <Grid item key={i} style={files.length === 1 && files[0].type.includes('pdf') ? { width: "100%" } : {}}>
         {playerTagForFile(files[i])}
       </Grid>
     )

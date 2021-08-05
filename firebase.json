@@ -3,8 +3,7 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
-  "functions": {
-  },
+  "functions": {},
   "hosting": {
     "public": "build",
     "ignore": [
@@ -14,9 +13,25 @@
     ],
     "rewrites": [
       {
-      "source": "/metadata/polygon/*",
-      "function": "getPolygonTokenMetadata"
-    },
+        "source": "/contractMetadata",
+        "function": "getContractMetadata"
+      },
+      {
+        "source": "/metadata/polygon/*",
+        "function": "getPolygonTokenMetadata"
+      },
+      {
+        "source": "/metadata/ethereum/*",
+        "function": "getEthereumTokenMetadata"
+      },
+      {
+        "source": "/metadata/fantom/*",
+        "function": "getFantomTokenMetadata"
+      },
+      {
+        "source": "/metadata/xdai/*",
+        "function": "getXdaiTokenMetadata"
+      },
       {
         "source": "**",
         "destination": "/index.html"

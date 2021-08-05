@@ -13,16 +13,20 @@ const storage = admin.storage()
 
 const LIT_CHAINS = {
   polygon: {
-    contractAddress: '0xb9A323711528D0c5a70df790929f4739f1cDd7fD',
+    contractAddress: '0x7C7757a9675f06F3BE4618bB68732c4aB25D2e88',
     chainId: 137
   },
   fantom: {
-    contractAddress: '0x3110c39b428221012934A7F617913b095BC1078C',
+    contractAddress: '0x5bD3Fe8Ab542f0AaBF7552FAAf376Fd8Aa9b3869',
     chainId: 250
   },
   ethereum: {
-    contractAddress: '0x55485885e82E25446DEC314Ccb810Bda06B9e01B',
+    contractAddress: '0xA54F7579fFb3F98bd8649fF02813F575f9b3d353',
     chainId: 1
+  },
+  xdai: {
+    contractAddress: '0xDFc2Fd83dFfD0Dafb216F412aB3B18f2777406aF',
+    chainId: 100
   }
 }
 
@@ -135,5 +139,64 @@ exports.getPolygonTokenMetadata = functions.https.onRequest(bugsnagWrapper(async
     tokenAddress,
     tokenId
   })
+  res.json(metadata)
+}))
+
+exports.getEthereumTokenMetadata = functions.https.onRequest(bugsnagWrapper(async (req, res) => {
+  const pathParts = req.path.split('/')
+  const tokenId = pathParts[pathParts.length - 1]
+
+  const chain = 'ethereum'
+  const tokenAddress = normalize(LIT_CHAINS[chain].contractAddress)
+  console.log(`getting token metadata for chain ${chain} and tokenAddress ${tokenAddress} and tokenId ${tokenId}`)
+  const metadata = await getTokenMetadata({
+    db,
+    chain,
+    tokenAddress,
+    tokenId
+  })
+  res.json(metadata)
+}))
+
+exports.getFantomTokenMetadata = functions.https.onRequest(bugsnagWrapper(async (req, res) => {
+  const pathParts = req.path.split('/')
+  const tokenId = pathParts[pathParts.length - 1]
+
+  const chain = 'fantom'
+  const tokenAddress = normalize(LIT_CHAINS[chain].contractAddress)
+  console.log(`getting token metadata for chain ${chain} and tokenAddress ${tokenAddress} and tokenId ${tokenId}`)
+  const metadata = await getTokenMetadata({
+    db,
+    chain,
+    tokenAddress,
+    tokenId
+  })
+  res.json(metadata)
+}))
+
+exports.getXdaiTokenMetadata = functions.https.onRequest(bugsnagWrapper(async (req, res) => {
+  const pathParts = req.path.split('/')
+  const tokenId = pathParts[pathParts.length - 1]
+
+  const chain = 'xdai'
+  const tokenAddress = normalize(LIT_CHAINS[chain].contractAddress)
+  console.log(`getting token metadata for chain ${chain} and tokenAddress ${tokenAddress} and tokenId ${tokenId}`)
+  const metadata = await getTokenMetadata({
+    db,
+    chain,
+    tokenAddress,
+    tokenId
+  })
+  res.json(metadata)
+}))
+
+
+exports.getContractMetadata = functions.https.onRequest(bugsnagWrapper(async (req, res) => {
+  const metadata = {
+    "name": "Lit Protocol",
+    "description": "Lit is a next-generation access control protocol.  Lit enabled NFTs are HTML NFTs with super powers like exclusive content for token holders",
+    "image": "https://mintlit.com/apple-touch-icon.png",
+    "external_link": "https://litprotocol.com"
+  }
   res.json(metadata)
 }))

@@ -7,7 +7,8 @@ exports.getTokenMetadata = async ({ db, chain, tokenAddress, tokenId }) => {
   return {
     name: data.title,
     description: data.description,
-    external_url: data.fileUrl
+    external_url: data.fileUrl,
+    animation_url: data.fileUrl
   }
 }
 

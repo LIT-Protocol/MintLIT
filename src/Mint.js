@@ -354,7 +354,7 @@ export default function Mint(props) {
                         Upload your files here
                       </Typography>
                       <Typography variant='body1'>
-                        Images, videos, and audio files accepted.  25mb max total.
+                        Images, videos, audio, and files accepted.  25mb max total.
                       </Typography>
                     </Grid>
 
