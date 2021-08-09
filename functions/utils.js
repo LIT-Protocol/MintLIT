@@ -2,7 +2,9 @@ const { normalize } = require('eth-sig-util')
 
 exports.getTokenMetadata = async ({ db, chain, tokenAddress, tokenId }) => {
   const normalizedTokenAddress = normalize(tokenAddress)
-  const docRef = db.collection('tokens').doc(chain).collection(normalizedTokenAddress).doc(tokenId)
+  // remove leading zeroes from tokenId
+  const normalizedTokenId = parseInt(tokenId).toString()
+  const docRef = db.collection('tokens').doc(chain).collection(normalizedTokenAddress).doc(normalizedTokenId)
   const data = (await docRef.get()).data()
   return {
     name: data.title,

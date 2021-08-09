@@ -21,7 +21,7 @@
         "function": "getPolygonTokenMetadata"
       },
       {
-        "source": "/metadata/ethereum/*",
+        "source": "/metadata/eth/*",
         "function": "getEthereumTokenMetadata"
       },
       {
