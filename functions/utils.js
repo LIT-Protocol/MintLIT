@@ -2,8 +2,9 @@ const { normalize } = require('eth-sig-util')
 
 exports.getTokenMetadata = async ({ db, chain, tokenAddress, tokenId }) => {
   const normalizedTokenAddress = normalize(tokenAddress)
-  // remove leading zeroes from tokenId
-  const normalizedTokenId = parseInt(tokenId).toString()
+  // remove leading zeroes from tokenId.  Sometimes opensea adds them.
+  const normalizedTokenId = tokenId.replace(/^0+/, '');
+  console.log(`Querying tokens/${chain}/${normalizedTokenAddress}/${normalizedTokenId}`)
   const docRef = db.collection('tokens').doc(chain).collection(normalizedTokenAddress).doc(normalizedTokenId)
   const data = (await docRef.get()).data()
   return {

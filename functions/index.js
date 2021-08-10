@@ -196,7 +196,9 @@ exports.getContractMetadata = functions.https.onRequest(bugsnagWrapper(async (re
     "name": "Lit Protocol",
     "description": "Lit is a next-generation access control protocol.  Lit enabled NFTs are HTML NFTs with super powers like exclusive content for token holders",
     "image": "https://mintlit.com/apple-touch-icon.png",
-    "external_link": "https://litprotocol.com"
+    "external_link": "https://litprotocol.com",
+    "seller_fee_basis_points": 100,
+    "fee_recipient": "0x50e2dac5e78B5905CB09495547452cEE64426db2"
   }
   res.json(metadata)
 }))
