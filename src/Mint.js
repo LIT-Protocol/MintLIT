@@ -504,10 +504,7 @@ export default function Mint(props) {
                     value={chain}
                     onChange={e => setChain(e.target.value)}
                   >
-                    <MenuItem value='ethereum'>Ethereum</MenuItem>
-                    <MenuItem value='polygon'>Polygon</MenuItem>
-                    <MenuItem value='xdai'>xDai</MenuItem>
-                    <MenuItem value='fantom'>Fantom</MenuItem>
+                    {Object.keys(LitJsSdk.LIT_CHAINS).map(k => <MenuItem key={k} value={k}>{LitJsSdk.LIT_CHAINS[k].name}</MenuItem>)}
                   </Select>
                 </FormControl>
                 <div style={{ height: 16 }} />
