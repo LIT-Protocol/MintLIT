@@ -6,11 +6,7 @@
   "functions": {},
   "hosting": {
     "public": "build",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "/contractMetadata",
@@ -34,7 +30,7 @@
       },
       {
         "source": "**",
-        "destination": "/index.html"
+        "destination": "https://litgateway.com"
       }
     ]
   }
